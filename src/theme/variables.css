@@ -1,0 +1,12 @@
+:root {
+  --accent: #3C30FF;
+  --light-accent: #6F66FF;
+  --bg-primary: #000000;
+  --bg-secondary: #171717;
+  --outline: #454545;
+  --text-primary: #ffffff;
+  --text-secondary: #555555;
+  --good: #58FF91;
+  --bad: #FF5858;
+  --shadow: 0 3px 15px rgba(0, 0, 0, 0.4);
+}
