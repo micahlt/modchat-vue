@@ -29,7 +29,7 @@ export default {
   background: #000;
   height: 100vh;
   display: grid;
-  grid-template-columns: 1fr 300px;
+  grid-template-columns: 1fr 240px;
   grid-template-rows: 70px 1fr 100px;
 }
 

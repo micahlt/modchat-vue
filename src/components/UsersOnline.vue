@@ -1,6 +1,6 @@
 <template>
 <div class="sidebar">
-  <UserStatus class="user" name="-Archon-" status="online" />
+  <UserStatus class="user" name="-Archon-" :online="false" />
 </div>
 </template>
 
@@ -25,6 +25,6 @@ export default {
 }
 
 .user:first-of-type {
-  padding-top: 130px;
+  margin-top: 90px;
 }
 </style>
