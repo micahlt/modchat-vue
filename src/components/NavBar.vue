@@ -8,27 +8,81 @@
       {{ room.toLowerCase() }}
     </span>
   </div>
-  <NavSearch class="search" />
+  <NavSearch class="search" @roomSearch="roomSearch" @logOut="logOut" />
   <img src="../assets/logo.png" alt="Modchat logo">
+  <div class="nav-options">
+    <a href="#" title="Notifications"><i data-eva="bell-outline" :data-eva-fill="textColor"></i></a>
+    <a href="#" title="Change Theme"><i data-eva="brush-outline" :data-eva-fill="textColor"></i></a>
+    <a href="#" title="Log Out" @click="logOut"><i data-eva="log-out" :data-eva-fill="textColor"></i></a>
+  </div>
 </div>
 </template>
 
 <script>
 import NavSearch from './NavSearch.vue';
-
+import * as eva from 'eva-icons';
 export default {
   name: 'NavBar',
+  emits: ["roomSearch"],
   components: {
     NavSearch
   },
   props: {
     room: String
+  },
+  mounted() {
+    eva.replace();
+  },
+  data() {
+    let textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-primary');
+    return {
+      textColor
+    }
+  },
+  methods: {
+    roomSearch(name) {
+      this.$emit("roomSearch", name);
+    },
+    logOut() {
+      window.localStorage.setItem('user', `{
+        "name": "Unauthed User",
+        "token": 0
+      }`);
+      window.location.reload();
+    }
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.nav-options {
+  position: absolute;
+  right: 230px;
+  height: 25px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-right: solid 2px var(--outline);
+  padding-right: 30px;
+}
+
+.nav-options a {
+  padding: 10px;
+}
+
+.nav-options svg {
+  transition: fill 0.1s;
+}
+
+.nav-options svg:hover {
+  fill: var(--text-secondary);
+  transition: fill 0.1s;
+}
+
+i {
+  color: var(--text-primary);
+}
+
 .nav {
   position: relative;
   background: var(--bg-secondary);
@@ -37,7 +91,7 @@ export default {
 
 img {
   position: absolute;
-  right: 20px;
+  right: 32px;
   height: 25px;
   top: 50%;
   transform: translateY(-50%);
@@ -55,10 +109,11 @@ img {
   color: var(--text-primary);
   padding: 10px;
   margin: 12px;
-  border: solid var(--accent) 3px;
-  border-radius: 0.5em;
+  border: solid var(--accent) 2px;
+  border-radius: 0.4em;
   height: 20px;
   width: 20px;
+  user-select: none;
 }
 
 .letter::after {

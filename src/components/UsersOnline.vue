@@ -1,17 +1,12 @@
 <template>
 <div class="sidebar">
-  <UserStatus class="user" name="-Archon-" :online="false" />
+  <span class="coming-soon">The online user sidebar<br>is coming soon!</span>
 </div>
 </template>
 
 <script>
-import UserStatus from './UserStatus.vue';
-
 export default {
   name: 'UsersOnline',
-  components: {
-    UserStatus
-  },
   props: {
     room: String
   }
@@ -22,9 +17,15 @@ export default {
 <style scoped>
 .sidebar {
   background: var(--bg-secondary);
+  display: grid;
 }
 
 .user:first-of-type {
   margin-top: 90px;
+}
+
+.coming-soon {
+  align-self: center;
+  color: var(--text-secondary);
 }
 </style>
