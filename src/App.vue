@@ -41,17 +41,32 @@ export default {
         type: 'text',
         content: msg
       });
-    },
-    logIn() {
-      let username = prompt('Username')
-      window.localStorage.setItem('user', `{
-        "name": "${username}",
-        "token": "abc"
-      }`);
-      window.location.reload();
     }
   },
   data() {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    if (urlParams.get('code') && urlParams.get('state')) {
+      console.log('reached url general check')
+      if (urlParams.get('state') == "login") {
+        console.log('reached state check');
+        fetch("http://localhost:8000/api/soa2code", {
+          method: "POST",
+          body: JSON.stringify({
+            "code": urlParams.get('code'),
+            "state": urlParams.get('state')
+          }),
+          headers: {
+            "Content-Type": "application/json; charset=utf-8"
+          }
+        }).then((res) => {
+          return res.json();
+        }).then((data) => {
+        })
+      }
+    }
+    /*
+     */
     if (!window.localStorage.getItem('user')) {
       window.localStorage.setItem('user', `{
         "name": "Unauthed User",

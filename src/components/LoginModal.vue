@@ -3,20 +3,14 @@
   <div class="content">
     <img src="../assets/logo.png" alt="Modchat logo">
     <div class="subheader">Join the conversation</div>
-    <a class="soa-btn" href="#" title="this is currently not functional and will log in as ScratchCat" @click="logIn">Log in with <span>Scratch</span></a>
+    <a class="soa-btn" href="https://oauth2.scratch-wiki.info/w/index.php?title=Special:ScratchOAuth2/authorize&client_id=940001774&redirect_uri=http://localhost:8080&scopes=identify&state=login" title="Powered by Scratch OAuth2" @click="logIn">Log in with <span>Scratch</span></a>
   </div>
 </div>
 </template>
 
 <script>
 export default {
-  name: 'LoginModal',
-  emits: ["logIn"],
-  methods: {
-    logIn() {
-      this.$emit("logIn", name);
-    }
-  }
+  name: 'LoginModal'
 }
 </script>
 
