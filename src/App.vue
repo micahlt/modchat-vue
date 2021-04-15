@@ -39,7 +39,8 @@ export default {
     sendMessage(msg) {
       socket.emit("chat", {
         type: 'text',
-        content: msg
+        content: msg,
+        token: this.user.token
       });
     }
   },
@@ -62,6 +63,19 @@ export default {
         }).then((res) => {
           return res.json();
         }).then((data) => {
+          if (data.user_name) {
+            this.user = {
+              "name": data.user_name,
+              "token": data.session,
+              "id": data.user_id
+            }
+            window.localStorage.setItem('user', `{
+              "name": "${data.user_name}",
+              "token": "${data.session}",
+              "id": ${data.user_id}
+            }`);
+            window.location.href = window.location.href.split('?')[0];
+          }
         })
       }
     }
@@ -82,15 +96,23 @@ export default {
   },
   mounted() {
     socket.on("connect", () => {
-      socket.emit("joinRoom", {
-        "username": this.user.name,
-        "roomname": this.currentRoom
+      socket.emit('authentication', {
+        username: this.user.name,
+        password: this.user.token
       });
+      socket.on('authenticated', function() {
+        console.log('Successfully authed')
+        socket.emit("joinRoom", {
+          "username": this.user.name,
+          "roomname": this.currentRoom
+        });
+      });
+      socket.on("message", (obj) => {
+        this.messageList.unshift(obj);
+        console.log(this.messageList);
+      })
     });
-    socket.on("message", (obj) => {
-      this.messageList.unshift(obj);
-      console.log(this.messageList);
-    })
+
   },
   computed: {
     isLoggedIn() {
