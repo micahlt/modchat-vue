@@ -45,40 +45,7 @@ export default {
     }
   },
   data() {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    if (urlParams.get('code') && urlParams.get('state')) {
-      console.log('reached url general check')
-      if (urlParams.get('state') == "login") {
-        console.log('reached state check');
-        fetch("http://localhost:8000/api/soa2code", {
-          method: "POST",
-          body: JSON.stringify({
-            "code": urlParams.get('code'),
-            "state": urlParams.get('state')
-          }),
-          headers: {
-            "Content-Type": "application/json; charset=utf-8"
-          }
-        }).then((res) => {
-          return res.json();
-        }).then((data) => {
-          if (data.user_name) {
-            this.user = {
-              "name": data.user_name,
-              "token": data.session,
-              "id": data.user_id
-            }
-            window.localStorage.setItem('user', `{
-              "name": "${data.user_name}",
-              "token": "${data.session}",
-              "id": ${data.user_id}
-            }`);
-            window.location.href = window.location.href.split('?')[0];
-          }
-        })
-      }
-    }
+
     /*
      */
     if (!window.localStorage.getItem('user')) {
@@ -96,6 +63,7 @@ export default {
   },
   mounted() {
     socket.on("connect", () => {
+      /*
       socket.emit('authentication', {
         username: this.user.name,
         password: this.user.token
@@ -107,6 +75,7 @@ export default {
           "roomname": this.currentRoom
         });
       });
+      */
       socket.on("message", (obj) => {
         this.messageList.unshift(obj);
         console.log(this.messageList);
@@ -178,6 +147,7 @@ export default {
   left: 0;
   background: rgba(0, 0, 0, 0.7);
   z-index: 3;
+  backdrop-filter: blur(3px);
 }
 
 .modal {
