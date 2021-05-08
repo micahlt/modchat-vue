@@ -1,7 +1,7 @@
-:root {
+.dark {
   --accent: #3C30FF;
   --light-accent: #6F66FF;
-  --bg-primary: #000000;
+  --bg-primary: #0a0a0a;
   --bg-secondary: #171717;
   --bg-tertiary: #202020;
   --outline: #454545;
@@ -10,4 +10,23 @@
   --good: #58FF91;
   --bad: #FF5858;
   --shadow: 0 3px 11px rgba(0, 0, 0, 0.6);
+}
+
+.light {
+  --accent: #3C30FF;
+  --light-accent: #6F66FF;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f1f1f1;
+  --bg-tertiary: #dddddd;
+  --text-primary: #000000;
+  --outline: #b9b9b9;
+  --text-secondary: #555555;
+  --shadow:
+    0 0.2px 2.7px -14px rgba(0, 0, 0, 0.056),
+    0 0.4px 6.9px -14px rgba(0, 0, 0, 0.08),
+    0 0.9px 14.2px -14px rgba(0, 0, 0, 0.1),
+    0 1.8px 29.2px -14px rgba(0, 0, 0, 0.124),
+    0 5px 80px -14px rgba(0, 0, 0, 0.18);
+  --good: #58FF91;
+  --bad: #FF5858;
 }

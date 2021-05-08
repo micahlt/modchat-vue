@@ -56,6 +56,7 @@ export default {
   align-items: flex-end;
   justify-content: left;
   flex-direction: column-reverse;
+  background: var(--bg-primary);
 }
 
 .render-messages::-webkit-scrollbar {
@@ -85,5 +86,11 @@ export default {
 .list-leave-to {
   opacity: 0;
   transform: translateY(30px);
+}
+
+@media only screen and (max-width: 700px) {
+  .render-messages {
+    grid-column: 1 / 3;
+  }
 }
 </style>

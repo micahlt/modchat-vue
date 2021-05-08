@@ -1,4 +1,4 @@
-<template>
+<template :class="theme">
 <NavBar :room="currentRoom" class="navbar" @roomSearch="roomChange" />
 <MessageRender class="messages" @sendMessage="sendMessage" :messageList="messageList" />
 <UsersOnline class="users" />
@@ -51,7 +51,8 @@ export default {
     if (!window.localStorage.getItem('user')) {
       window.localStorage.setItem('user', `{
         "name": "Unauthed User",
-        "token": 0
+        "token": 0,
+        "password": ""
       }`);
       window.location.reload();
     }
@@ -62,24 +63,24 @@ export default {
     }
   },
   mounted() {
+    let that = this;
     socket.on("connect", () => {
-      /*
+      console.log('connected');
       socket.emit('authentication', {
-        username: this.user.name,
-        password: this.user.token
+        username: that.user.name,
+        password: that.user.password
       });
       socket.on('authenticated', function() {
         console.log('Successfully authed')
         socket.emit("joinRoom", {
-          "username": this.user.name,
-          "roomname": this.currentRoom
+          "username": that.user.name,
+          "roomname": that.currentRoom
         });
+        socket.on("message", (obj) => {
+          that.messageList.unshift(obj);
+          console.log(that.messageList);
+        })
       });
-      */
-      socket.on("message", (obj) => {
-        this.messageList.unshift(obj);
-        console.log(this.messageList);
-      })
     });
 
   },
@@ -106,7 +107,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  background: #000;
+  background: var(--bg-primary);
   height: 100vh;
   display: grid;
   grid-template-columns: 1fr 240px;
@@ -145,9 +146,9 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.5);
   z-index: 3;
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(4px);
 }
 
 .modal {
@@ -156,5 +157,11 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+@media only screen and (max-width: 700px) {
+  .messages {
+    grid-column: 1 / 3;
+  }
 }
 </style>

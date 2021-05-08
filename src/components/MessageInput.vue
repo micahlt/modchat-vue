@@ -43,6 +43,10 @@ export default {
 .wrapper {
   position: relative;
   box-shadow: 0 -12px 13px var(--bg-primary);
+  background: var(--bg-primary);
+  display: block;
+  grid-column: 1 / 2;
+  grid-row: 3 / 3;
 }
 
 .lightgray {
@@ -74,13 +78,11 @@ a {
 
 .input {
   text-align: left;
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
+  margin: 20px;
   z-index: 1;
   font-family: 'Inter', sans-serif;
   font-size: 0.9em;
-  width: calc(100vw - 330px);
+  width: auto;
   max-height: 5em;
   padding: 0.8em;
   padding-left: 0.7em;
@@ -130,8 +132,8 @@ a {
 
 .action-btns {
   position: absolute;
-  bottom: 2.9em;
-  right: 3.5em;
+  bottom: 2.7em;
+  right: 2.3em;
   z-index: 1;
 }
 
@@ -146,5 +148,11 @@ a {
 .action-btns svg:hover {
   fill: var(--text-primary);
   transition: 0.2s;
+}
+
+@media only screen and (max-width: 700px) {
+  .wrapper {
+    grid-column: 1 / 3;
+  }
 }
 </style>
