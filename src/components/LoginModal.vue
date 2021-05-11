@@ -7,7 +7,7 @@
         <div class="subheader">Join the conversation</div>
         <a class="big-btn mc-btn" href="#" title="For existing Modchat accounts" @click="existingAccount">Log
           in with Modchat</a>
-        <a class="big-btn soa-btn" href="https://oauth2.scratch-wiki.info/w/index.php?title=Special:ScratchOAuth2/authorize&client_id=940001774&redirect_uri=http://localhost:8080&scopes=identify&state=login" title="Powered by Scratch OAuth2"
+        <a class="big-btn soa-btn" :href="`https://oauth2.scratch-wiki.info/w/index.php?title=Special:ScratchOAuth2/authorize&client_id=940001774&redirect_uri=${clientURL}&scopes=identify&state=login`" title="Powered by Scratch OAuth2"
           @click="logIn">Sign
           up with <span>Scratch</span></a>
       </div>
@@ -49,7 +49,7 @@ export default {
       console.log('reached url general check')
       if (urlParams.get('state') == "login") {
         console.log('reached state check!');
-        fetch(`http://localhost:8000/api/soa2code`, {
+        fetch(`${this.serverURL}/api/soa2code`, {
           method: "POST",
           body: JSON.stringify({
             "code": urlParams.get('code'),
@@ -91,7 +91,7 @@ export default {
     signUp() {
       let that = this;
       console.log(that.suPwd)
-      fetch(`http://localhost:8000/api/updatepassword`, {
+      fetch(`${this.serverURL}/api/updatepassword`, {
         method: "POST",
         body: JSON.stringify({
           "token": JSON.parse(window.localStorage.getItem('user')).token,
@@ -114,7 +114,7 @@ export default {
     logIn() {
       let that = this;
       console.log(that.suPwd)
-      fetch(`http://localhost:8000/api/login`, {
+      fetch(`${this.serverURL}/api/login`, {
         method: "POST",
         body: JSON.stringify({
           "username": that.liUsr,
@@ -132,6 +132,18 @@ export default {
           window.location.reload();
         }
       });
+    }
+  },
+  computed: {
+    clientURL() {
+      // FOR DEVELOPMENT: override the window.clientHost variable in the main.js file
+      let root = window.clientHost;
+      return root;
+    },
+    serverURL() {
+      // FOR DEVELOPMENT: override the window.serverHost variable in the main.js file
+      let root = window.serverHost;
+      return root;
     }
   }
 }
