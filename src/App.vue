@@ -9,6 +9,9 @@
 </template>
 
 <script>
+// These global variables are used to provide API and redirect routes.
+window.serverHost = "https://modchatserver.herokuapp.com"; // please reset to https://modchatserver.herokuapp.com after testing or development
+window.clientHost = "https://modchat.micahlindley.com"; // please reset to https://modchat.micahlindley.com after testing or development
 import {
   io
 } from "socket.io-client";
@@ -16,7 +19,8 @@ import MessageRender from './components/MessageRender.vue';
 import NavBar from './components/NavBar.vue';
 import UsersOnline from './components/UsersOnline.vue';
 import LoginModal from './components/LoginModal.vue';
-const socket = io("ws://localhost:8000");
+console.log('Server host:', window.serverHost);
+const socket = io(window.serverHost);
 export default {
   name: 'App',
   components: {
@@ -65,18 +69,20 @@ export default {
   mounted() {
     let that = this;
     socket.on("connect", () => {
-      console.log('connected');
+      console.log('Connected to server');
       socket.emit('authentication', {
         username: that.user.name,
         password: that.user.password
       });
+      console.log('Submitted auth');
       socket.on('authenticated', function() {
-        console.log('Successfully authed')
+        console.log('Successfully authed');
         socket.emit("joinRoom", {
           "username": that.user.name,
           "roomname": that.currentRoom
         });
         socket.on("message", (obj) => {
+          console.log('Recieved a message');
           that.messageList.unshift(obj);
           console.log(that.messageList);
         })

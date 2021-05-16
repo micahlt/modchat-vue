@@ -62,6 +62,7 @@ export default {
           this.mode = 'signup'
           return res.json();
         }).then((data) => {
+          console.log("Recieved session data:", data);
           if (data.user_name) {
             this.user = {
               "name": data.user_name,
