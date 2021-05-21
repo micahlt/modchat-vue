@@ -9,9 +9,9 @@
 </template>
 
 <script>
-// These global variables are used to provide API and redirect routes.
-window.serverHost = "https://modchatserver.herokuapp.com"; // please reset to https://modchatserver.herokuapp.com after testing or development
-window.clientHost = "https://modchat.micahlindley.com"; // please reset to https://modchat.micahlindley.com after testing or development
+// These global variables are used to provide API and redirect routes.  You can change these by changing your environment variables.  There's a good tutorial here: https://www.twilio.com/blog/2017/01/how-to-set-environment-variables.html
+window.serverHost = process.env.VUE_APP_SERVER;
+window.clientHost = process.env.VUE_APP_CLIENT;
 import {
   io
 } from "socket.io-client";
