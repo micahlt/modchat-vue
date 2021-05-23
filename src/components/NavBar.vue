@@ -9,10 +9,10 @@
     </span>
   </div>
   <NavSearch class="search" @roomSearch="roomSearch" @logOut="logOut" />
-  <img src="../assets/logo.png" alt="Modchat logo">
+  <div class="logo"></div>
   <div class="nav-options">
     <a href="#" title="Notifications"><i data-eva="bell-outline" :data-eva-fill="textColor"></i></a>
-    <a href="#" title="Change Theme"><i data-eva="brush-outline" :data-eva-fill="textColor"></i></a>
+    <a href="#" title="Change Theme" @click="changeTheme"><i data-eva="brush-outline" :data-eva-fill="textColor"></i></a>
     <a href="#" title="Log Out" @click="logOut"><i data-eva="log-out" :data-eva-fill="textColor"></i></a>
   </div>
 </div>
@@ -49,6 +49,30 @@ export default {
         "token": 0
       }`);
       window.location.reload();
+    },
+    changeTheme() {
+      switch (window.localStorage.getItem('theme')) {
+        case ('default'): {
+          if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            window.localStorage.setItem('theme', 'light');
+          } else {
+            window.localStorage.setItem('theme', 'dark');
+          }
+          window.location.reload();
+          break;
+        }
+        case ('light'): {
+          window.localStorage.setItem('theme', 'dark');
+          window.location.reload();
+          break;
+        }
+        case ('dark'): {
+          window.localStorage.setItem('theme', 'light');
+          window.location.reload();
+          break;
+        }
+      }
+      eva.replace();
     }
   }
 }
@@ -89,10 +113,13 @@ i {
   display: flex;
 }
 
-img {
+.logo {
+  background-image: var(--logo);
+  background-size: contain;
   position: absolute;
   right: 32px;
   height: 25px;
+  width: 175px;
   top: 50%;
   transform: translateY(-50%);
 }

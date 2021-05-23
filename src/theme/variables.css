@@ -1,4 +1,5 @@
 .dark {
+  --logo: url('../assets/logo-darkmode.png');
   --accent: #3C30FF;
   --light-accent: #6F66FF;
   --bg-primary: #0a0a0a;
@@ -13,6 +14,7 @@
 }
 
 .light {
+  --logo: url('../assets/logo-lightmode.png');
   --accent: #3C30FF;
   --light-accent: #6F66FF;
   --bg-primary: #ffffff;

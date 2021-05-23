@@ -1,7 +1,7 @@
 <template>
 <div class="login-modal">
   <div class="content pad-bottom">
-    <img src="../assets/logo.png" alt="Modchat logo">
+    <img src="../assets/logo-darkmode.png" alt="Modchat logo">
     <transition-group name="fade">
       <div class="content" v-if="mode == 'landing'">
         <div class="subheader">Join the conversation</div>
