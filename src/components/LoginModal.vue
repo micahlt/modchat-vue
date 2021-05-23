@@ -14,15 +14,15 @@
       <div class="content" v-if="mode == 'signup'">
         <div class="subheader">Sign up for a Modchat account</div>
         <br>
-        <TextBox v-model="suUsr" :placeholder="username" disabled="true"></TextBox><br>
-        <TextBox v-model="suPwd" @input="ping" placeholder="Password"></TextBox>
+        <TextBox v-model="suUsr" :placeholder="username" disabled="true" @enterKey="signUp"></TextBox><br>
+        <TextBox v-model="suPwd" @input="ping" placeholder="Password" @enterKey="signUp"></TextBox>
         <PrimaryButton class="primary-btn" title="Sign Up" @click="signUp">Sign Up</PrimaryButton>
       </div>
       <div class="content" v-if="mode == 'login'">
         <div class="subheader">Log in to your Modchat account</div>
         <br>
-        <TextBox placeholder="Username" v-model="liUsr"></TextBox><br>
-        <TextBox placeholder="Password" v-model="liPwd"></TextBox>
+        <TextBox placeholder="Username" v-model="liUsr" @enterKey="logIn"></TextBox><br>
+        <TextBox placeholder="Password" v-model="liPwd" type="password" @enterKey="logIn"></TextBox>
         <PrimaryButton class="primary-btn" title="Log In" @click="logIn">Log In</PrimaryButton>
       </div>
     </transition-group>
@@ -114,25 +114,29 @@ export default {
     },
     logIn() {
       let that = this;
+      let user = JSON.parse(window.localStorage.getItem('user'));
       console.log(that.suPwd)
       fetch(`${this.serverURL}/api/login`, {
-        method: "POST",
-        body: JSON.stringify({
-          "username": that.liUsr,
-          "password": that.liPwd
-        }),
-        headers: {
-          "Content-Type": "application/json; charset=utf-8"
-        }
-      }).then((response) => {
-        if (response.ok) {
-          let user = JSON.parse(window.localStorage.getItem('user'));
-          user.password = that.liPwd;
-          user.name = that.liUsr;
+          method: "POST",
+          body: JSON.stringify({
+            "username": that.liUsr,
+            "password": that.liPwd
+          }),
+          headers: {
+            "Content-Type": "application/json; charset=utf-8"
+          }
+        }).then((response) => {
+          if (response.ok) {
+            user.password = that.liPwd;
+            user.name = that.liUsr;
+            return response.text()
+          }
+        })
+        .then(text => {
+          user.token = text;
           window.localStorage.setItem('user', JSON.stringify(user));
           window.location.reload();
-        }
-      });
+        });
     }
   },
   computed: {

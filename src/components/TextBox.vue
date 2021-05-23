@@ -1,6 +1,6 @@
 <template>
 <div>
-  <input :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" type=" text" :placeholder="placeholder" :disabled="disabled">
+  <input :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" :type="type" :placeholder="placeholder" :disabled="disabled" @keyup.enter="$emit('enterKey')">
   <span></span>
 </div>
 </template>
@@ -9,9 +9,10 @@
 export default {
   name: 'TextBox',
   model: {
-    prop: 'title',
+    props: 'title',
     event: 'change'
   },
+  emits: ['enterKey'],
   props: {
     placeholder: {
       type: String,
@@ -24,6 +25,10 @@ export default {
     modelValue: {
       type: String,
       default: ''
+    },
+    type: {
+      type: String,
+      default: 'text'
     }
   }
 }

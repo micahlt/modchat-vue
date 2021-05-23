@@ -11,8 +11,8 @@
   <NavSearch class="search" @roomSearch="roomSearch" @logOut="logOut" />
   <div class="logo"></div>
   <div class="nav-options">
-    <a href="#" title="Notifications"><i data-eva="bell-outline" :data-eva-fill="textColor"></i></a>
-    <a href="#" title="Change Theme" @click="changeTheme"><i data-eva="brush-outline" :data-eva-fill="textColor"></i></a>
+    <a href="#" title="Notifications"><i data-eva="bell-outline" data-eva-fill="#ddd"></i></a>
+    <a href="#" title="Change Theme" @click="changeTheme"><i data-eva="moon-outline" :data-eva-fill="textColor"></i></a>
     <a href="#" title="Log Out" @click="logOut"><i data-eva="log-out" :data-eva-fill="textColor"></i></a>
   </div>
 </div>

@@ -19,7 +19,6 @@ import MessageRender from './components/MessageRender.vue';
 import NavBar from './components/NavBar.vue';
 import UsersOnline from './components/UsersOnline.vue';
 import LoginModal from './components/LoginModal.vue';
-console.log('Server host:', window.serverHost);
 const socket = io(window.serverHost);
 export default {
   name: 'App',
