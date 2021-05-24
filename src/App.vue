@@ -30,10 +30,14 @@ export default {
   },
   methods: {
     roomChange(name) {
-      socket.disconnect();
-      this.currentRoom = name.substring(1);
-      this.messageList = [];
-      socket.connect();
+      let that = this;
+      socket.emit("leaveRoom", this.currentRoom);
+      that.currentRoom = name.substring(1);
+      that.messageList = [];
+      socket.emit("joinRoom", {
+        "username": that.user.name,
+        "roomname": that.currentRoom
+      });
       console.log('changeRoom:' + name)
     },
     enableModal() {

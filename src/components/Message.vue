@@ -5,8 +5,8 @@
   </a>
   <div class="gridcol-2">
     <a :href="`https://scratch.mit.edu/users/${msg.username}`" class="username" :title="`Visit ${msg.username} on Scratch`">{{ msg.username }} <span class="badge b-purple" v-if="isYou">YOU</span></a>
-    <div v-if="msg.type == 'text'" class="message-content">{{ msg.content }} <a class="msglink link-reply" href="#"><i data-eva="corner-up-left-outline" :data-eva-fill="textSecondary" :data-eva-height="fontSize" :data-eva-width="fontSize"></i></a><a
-        class="msglink link-report" href="#"><i data-eva="flag-outline" :data-eva-fill="textSecondary" :data-eva-height="fontSize" :data-eva-width="fontSize"></i></a>
+    <div v-if="msg.type == 'text'" class="message-content" v-linkified:options="{ attributes: { style: 'color: white;' } }">{{ msg.content }} <a class="msglink link-reply" href="#"><i data-eva="corner-up-left-outline" :data-eva-fill="textSecondary"
+          :data-eva-height="fontSize" :data-eva-width="fontSize"></i></a><a class="msglink link-report" href="#"><i data-eva="flag-outline" :data-eva-fill="textSecondary" :data-eva-height="fontSize" :data-eva-width="fontSize"></i></a>
     </div>
     <img v-else :src="msg.imgsrc" alt="">
 
@@ -95,6 +95,10 @@ export default {
 
 .msglink svg {
   transform: translateY(4px);
+}
+
+a.linkified {
+  color: white !important;
 }
 
 .gridcol-2 {

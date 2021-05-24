@@ -1,6 +1,7 @@
 import {
   createApp
 } from 'vue';
+import linkify from 'vue-linkify';
 import App from './App.vue';
 switch (window.localStorage.getItem('theme')) {
   case (null): {
@@ -31,5 +32,6 @@ switch (window.localStorage.getItem('theme')) {
 }
 
 let app = createApp(App);
+app.directive('linkified', linkify);
 app.mount('#app');
 import './theme/variables.css';
