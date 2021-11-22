@@ -5,7 +5,6 @@
     <a href="#" v-for="s in currentSuggestions" :key="s.label" @click="performAction(s)" :title="genTitle(s)">
       <div class="suggestion">
         {{ s.label }} <span class="lightgray">({{ s.type }})</span>
-        <br>
       </div>
     </a>
   </div>
@@ -92,6 +91,7 @@ export default {
 }
 
 #autocomplete {
+  font-size: 0.85em;
   top: 2.4em;
   position: absolute;
   border-style: solid;
@@ -109,9 +109,9 @@ export default {
   transition: height 0.2s 0.2s, opacity 0.3s 0.2s;
   padding-top: 20px;
   text-align: left;
-  padding-left: 1em;
-  padding-right: 1em;
-  padding-bottom: 12px;
+  padding-left: .2em;
+  padding-right: .2em;
+  padding-bottom: 10px;
   overflow-y: auto;
 }
 
@@ -146,8 +146,10 @@ export default {
 .suggestion {
   color: var(--text-primary);
   text-align: left;
-  margin: 0;
-  padding: 10px;
+  margin: 5px 0;
+  padding: 8px;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
 }
 
 a {
@@ -182,7 +184,7 @@ input {
 input:focus {
   outline: none;
   transition: width 0.2s, box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
-  width: 20em;
+  width: 15.4em;
   background-color: var(--bg-tertiary);
   box-shadow: var(--shadow);
   border-bottom-color: var(--accent);

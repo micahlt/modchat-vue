@@ -1,19 +1,23 @@
 <template>
 <div class="nav">
-  <div class="room-name">
-    <div class="letter">
-      {{ room.toUpperCase().charAt(0) }}
+  <div class="grid-1">
+    <div class="room-name">
+      <div class="letter">
+        {{ room.toUpperCase().charAt(0) }}
+      </div>
+      <span class="full-name">
+        {{ room.toLowerCase() }}
+      </span>
     </div>
-    <span class="full-name">
-      {{ room.toLowerCase() }}
-    </span>
+    <NavSearch class="search" @roomSearch="roomSearch" @logOut="logOut" />
   </div>
-  <NavSearch class="search" @roomSearch="roomSearch" @logOut="logOut" />
-  <div class="logo"></div>
-  <div class="nav-options">
-    <a href="#" title="Notifications"><i data-eva="bell-outline" data-eva-fill="#ddd"></i></a>
-    <a href="#" title="Change Theme" @click="changeTheme"><i data-eva="moon-outline" :data-eva-fill="textColor"></i></a>
-    <a href="#" title="Log Out" @click="logOut"><i data-eva="log-out" :data-eva-fill="textColor"></i></a>
+  <div class="grid-2">
+    <div class="nav-options">
+      <a href="#" title="Notifications"><i data-eva="bell-outline" data-eva-fill="#ddd"></i></a>
+      <a href="#" title="Change Theme" @click="changeTheme"><i data-eva="moon-outline" :data-eva-fill="textColor"></i></a>
+      <a href="#" title="Log Out" @click="logOut"><i data-eva="log-out" :data-eva-fill="textColor"></i></a>
+    </div>
+    <div class="logo"></div>
   </div>
 </div>
 </template>
@@ -80,12 +84,18 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.grid-1 {
+  display: flex;
+  align-content: left;
+}
+
+.grid-2 {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}
+
 .nav-options {
-  position: absolute;
-  right: 230px;
-  height: 25px;
-  top: 50%;
-  transform: translateY(-50%);
   border-right: solid 2px var(--outline);
   padding-right: 30px;
 }
@@ -110,18 +120,17 @@ i {
 .nav {
   position: relative;
   background: var(--bg-secondary);
-  display: flex;
+  display: grid;
+  grid-template-columns: auto auto;
 }
 
 .logo {
+  --height: 25px;
   background-image: var(--logo);
   background-size: contain;
-  position: absolute;
-  right: 32px;
-  height: 25px;
-  width: 175px;
-  top: 50%;
-  transform: translateY(-50%);
+  height: var(--height);
+  width: calc(var(--height) * 7);
+  margin: 0 1.2em;
 }
 
 .room-name {
@@ -166,5 +175,18 @@ i {
 .search {
   margin-top: 15px;
   margin-left: 40px;
+}
+
+@media only screen and (max-width: 700px) {
+
+  .search,
+  .logo {
+    display: none;
+  }
+
+  .nav-options {
+    border-right: none;
+    padding-right: 8px;
+  }
 }
 </style>
