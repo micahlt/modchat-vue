@@ -3,6 +3,10 @@ import {
 } from 'vue';
 import linkify from 'vue-linkify';
 import App from './App.vue';
+import runtime from "serviceworker-webpack-plugin/lib/runtime";
+if ("serviceWorker" in navigator) {
+  runtime.register();
+}
 switch (window.localStorage.getItem('theme')) {
   case (null): {
     window.localStorage.setItem('theme', 'default');
