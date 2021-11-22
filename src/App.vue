@@ -86,6 +86,9 @@ export default {
         });
         socket.on("message", (obj) => {
           console.log('Recieved a message');
+          if (obj.profilePicture.includes("?v=")) {
+            obj.profilePicture = obj.profilePicture.slice(0, -3);
+          }
           that.messageList.unshift(obj);
           console.log(that.messageList);
         })

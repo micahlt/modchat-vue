@@ -7,8 +7,7 @@
         <div class="subheader">Join the conversation</div>
         <a class="big-btn mc-btn" href="#" title="For existing Modchat accounts" @click="existingAccount">Log
           in with Modchat</a>
-        <a class="big-btn soa-btn" :href="`https://oauth2.scratch-wiki.info/w/index.php?title=Special:ScratchOAuth2/authorize&client_id=940001774&redirect_uri=${clientURL}&scopes=identify&state=login`" title="Powered by Scratch OAuth2"
-          @click="logIn">Sign
+        <a class="big-btn soa-btn" :href="`https://oauth2.scratch-wiki.info/w/index.php?title=Special:ScratchOAuth2/authorize&client_id=940001774&redirect_uri=${clientURL}&scopes=identify&state=login`" title="Powered by Scratch OAuth2">Sign
           up with <span>Scratch</span></a>
       </div>
       <div class="content" v-if="mode == 'signup'">

@@ -1,6 +1,6 @@
 <template>
 <div class="wrapper">
-  <div contenteditable class="input" @keydown.enter.prevent="sendMessage($event)"></div>
+  <div contenteditable class="input" @keydown.enter.prevent="sendMessage($event)" enterkeyhint="send"></div>
   <div class="action-btns">
     <a href="#" title="Attach" @click="attachFile"><i data-eva="attach-2-outline" :data-eva-fill="accent"></i></a>
     <a href="#" title="Send" @click="manualSend"><i data-eva="paper-plane-outline" :data-eva-fill="accent"></i></a>
