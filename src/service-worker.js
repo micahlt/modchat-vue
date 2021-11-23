@@ -1,3 +1,5 @@
+console.log('Service worker started');
+/*
 import {
   registerRoute
 } from 'workbox-routing';
@@ -25,3 +27,4 @@ registerRoute(
     ],
   })
 );
+*/

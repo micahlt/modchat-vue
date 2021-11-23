@@ -1,15 +1,18 @@
 <template>
 <div class="message">
-  <a :href="`https://scratch.mit.edu/users/${msg.username}`" class="username" :title="`Visit ${msg.username} on Scratch`">
+  <a :href="`https://scratch.mit.edu/users/${msg.username}`" class="username" :title="`Visit ${msg.username} on Scratch`" target="_blank">
     <img :src="msg.profilePicture" class="pic" :alt="msg.username">
   </a>
   <div class="gridcol-2">
-    <a :href="`https://scratch.mit.edu/users/${msg.username}`" class="username" :title="`Visit ${msg.username} on Scratch`">{{ msg.username }} <span class="badge b-purple" v-if="isYou">YOU</span></a>
-    <div v-if="msg.type == 'text'" class="message-content" v-linkified:options="{ attributes: { style: 'color: white;' } }">{{ msg.content }} <a class="msglink link-reply" href="#"><i data-eva="corner-up-left-outline" :data-eva-fill="textSecondary"
-          :data-eva-height="fontSize" :data-eva-width="fontSize"></i></a><a class="msglink link-report" href="#"><i data-eva="flag-outline" :data-eva-fill="textSecondary" :data-eva-height="fontSize" :data-eva-width="fontSize"></i></a>
+    <a :href="`https://scratch.mit.edu/users/${msg.username}`" class="username" :title="`Visit ${msg.username} on Scratch`" target="_blank">{{ msg.username }} <span class="badge b-purple" v-if="isYou">YOU</span></a>
+    <div v-if="msg.type == 'text'" class="message-content" v-linkified:options="{ attributes: { style: 'color: white;font-weight:bold;text-decoration:none' }, formatHref: {
+    mention: (href) => 'https://scratch.mit.edu/users' + href,
+    hashtag: (href) => '#' + href.substring(1)
+  }}">
+      {{msg.content}} <a class=" msglink link-reply" href="#"><i data-eva="corner-up-left-outline" :data-eva-fill="textSecondary" :data-eva-height="fontSize" :data-eva-width="fontSize"></i></a><a class="msglink link-report" href="#"><i
+          data-eva="flag-outline" :data-eva-fill="textSecondary" :data-eva-height="fontSize" :data-eva-width="fontSize"></i></a>
     </div>
     <img v-else :src="msg.imgsrc" alt="">
-
   </div>
 </div>
 </template>
@@ -39,6 +42,34 @@ export default {
       } else {
         return false;
       }
+    },
+    filteredContent() {
+      /*
+      let mentionsMessage;
+      this.msg.content.split(" ").forEach(word => {
+        if (word[0] == "@") {
+          const USERNAME_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
+          let mentionName = "";
+          let i = 1;
+          while (USERNAME_CHARS.includes(word[i])) {
+            mentionName += word[i];
+            i++;
+          }
+          let afterName = word.slice(i);
+          const link = '<a class="mention" target="_blank" href="https://scratch.mit.edu/users/' + mentionName + '">@' + mentionName + "</a>"; // creates a link relevant to the user
+          mentionsMessage = mentionsMessage + link + afterName + " ";
+        } else if (word.startsWith("https://") || word.startsWith("http://")) {
+          const link = '<a class="mention" target="_blank" href="' + word + '">' + word + "</a> "; // creates a link
+          mentionsMessage = mentionsMessage + link;
+        } else if (word[0] == "#") {
+          const link = '<a class="mention" target="" href="/chat?r=' + word.substring(1, word.length) + '">' + word + "</a> "; // creates a link relevant to the room
+          mentionsMessage = mentionsMessage + link;
+        } else {
+          mentionsMessage = mentionsMessage + word + " ";
+        }
+      });
+      return mentionsMessage; */
+      return this.msg.content;
     }
   }
 }

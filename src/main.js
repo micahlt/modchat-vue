@@ -2,6 +2,8 @@ import {
   createApp
 } from 'vue';
 import linkify from 'vue-linkify';
+import 'linkify-plugin-mention';
+import 'linkify-plugin-hashtag';
 import App from './App.vue';
 import runtime from "serviceworker-webpack-plugin/lib/runtime";
 if ("serviceWorker" in navigator) {
