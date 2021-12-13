@@ -53,8 +53,6 @@ export default {
   padding: 10px;
   display: flex;
   margin-left: 10px;
-  align-items: flex-end;
-  justify-content: left;
   flex-direction: column-reverse;
   background: var(--bg-primary);
 }
