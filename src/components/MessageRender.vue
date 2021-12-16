@@ -2,7 +2,7 @@
 <transition-group tag="div" id="renderDiv" name="list" class="render-messages" @enter="scroll()">
   <Message class="message-object" v-for="m in messageList" :msg="m" :key="m.id" />
 </transition-group>
-<MessageInput @sendMessage="sendMessage" />
+<MessageInput @sendMessage="sendMessage" @typing="$emit('typing')" :typingList="typingList" />
 </template>
 
 <script>
@@ -10,13 +10,14 @@ import MessageInput from './MessageInput.vue';
 import Message from './Message.vue';
 export default {
   name: 'MessageRender',
-  emits: ["sendMessage"],
+  emits: ["sendMessage", "typing"],
   components: {
     MessageInput,
     Message
   },
   props: {
-    messageList: Array
+    messageList: Array,
+    typingList: Array
   },
   data() {
     console.log(this.messageList)

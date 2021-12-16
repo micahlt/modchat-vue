@@ -1,6 +1,6 @@
 <template :class="theme">
 <NavBar :room="currentRoom" class="navbar" @roomSearch="roomChange" />
-<MessageRender class="messages" @sendMessage="sendMessage" :messageList="messageList" />
+<MessageRender class="messages" @sendMessage="sendMessage" :messageList="messageList" @typing="typing" :typingList="typingList" />
 <UsersOnline class="users" />
 <transition-group name="fade">
   <LoginModal class="modal" @logIn="logIn" v-if="!isLoggedIn" />
@@ -44,17 +44,23 @@ export default {
       this.modalEnabled = true;
     },
     sendMessage(msg) {
+      let that = this;
+      console.log(that.user.name)
       socket.emit("chat", {
         type: 'text',
         content: msg,
-        token: this.user.token
+        username: that.user.name
       });
+    },
+    typing() {
+      let that = this;
+      socket.emit("userTyping", {
+        username: that.user.name,
+        room: that.currentRoom
+      })
     }
   },
   data() {
-
-    /*
-     */
     if (!window.localStorage.getItem('user')) {
       window.localStorage.setItem('user', `{
         "name": "Unauthed User",
@@ -66,7 +72,8 @@ export default {
     return {
       currentRoom: 'general',
       user: JSON.parse(window.localStorage.getItem('user')),
-      messageList: []
+      messageList: [],
+      typingList: []
     }
   },
   mounted() {
@@ -91,7 +98,18 @@ export default {
           }
           that.messageList.unshift(obj);
           console.log(that.messageList);
-        })
+        });
+        socket.on("isTyping", (obj) => {
+          if (!that.typingList.includes(obj.username)) {
+            console.log(obj.username);
+            if (that.user.name != obj.username) {
+              that.typingList.push(obj.username);
+            }
+          }
+          window.setTimeout(() => {
+            that.typingList.splice(that.typingList.indexOf(obj.username));
+          }, 600);
+        });
       });
     });
 

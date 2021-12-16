@@ -4,8 +4,8 @@
     <img :src="msg.profilePicture" class="pic" :alt="msg.username">
   </a>
   <div class="gridcol-2">
-    <a :href="`https://scratch.mit.edu/users/${msg.username}`" class="username" :title="`Visit ${msg.username} on Scratch`" target="_blank">{{ msg.username }} <span class="badge b-purple" v-if="isYou">YOU</span></a>
-    <div v-if="msg.type == 'text'" class="message-content" v-linkified:options="{ attributes: { style: 'color: white;font-weight:bold;text-decoration:none' }, formatHref: {
+    <a :href="`https://scratch.mit.edu/users/${msg.username}`" class="username" :title="`Visit ${msg.username} on Scratch`" target="_blank">{{ msg.username }} <span class="badge b-purple" v-if="isYou">YOU</span><span class="badge" v-if="msg.username == 'Modchat Bot'">BOT</span></a>
+    <div v-if="msg.type == 'text'" class="message-content" v-linkified:options="{ attributes: { style: 'color: var(--text-primary);font-weight:bold;text-decoration:none' }, formatHref: {
     mention: (href) => 'https://scratch.mit.edu/users' + href,
     hashtag: (href) => '#' + href.substring(1)
   }}">
@@ -100,13 +100,13 @@ export default {
   font-weight: bolder;
   line-height: 1.5em;
   text-decoration: none;
-  font-size: 0.9em;
+  font-size: 0.8em;
 }
 
 .message-content {
   color: var(--text-primary);
   word-wrap: break-word;
-  font-size: 0.9em;
+  font-size: 0.85em;
 }
 
 .message-content:hover .msglink {
@@ -129,7 +129,7 @@ export default {
 }
 
 a.linkified {
-  color: white !important;
+  color: var(--text-primary) !important;
 }
 
 .gridcol-2 {

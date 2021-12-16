@@ -1,11 +1,22 @@
 <template>
-<div class="wrapper">
-  <div contenteditable class="input" @keydown.enter.prevent="sendMessage($event)" enterkeyhint="send"></div>
-  <div class="action-btns">
-    <a href="#" title="Attach" @click="attachFile"><i data-eva="attach-2-outline" :data-eva-fill="accent"></i></a>
-    <a href="#" title="Send" @click="manualSend"><i data-eva="paper-plane-outline" :data-eva-fill="accent"></i></a>
+  <div class="wrapper">
+    <div class="typing lightgray">{{ typingMessage }}</div>
+    <div
+      contenteditable
+      class="input"
+      @keydown.enter.prevent="sendMessage($event)"
+      enterkeyhint="send"
+      @keydown="sendTyping"
+    ></div>
+    <div class="action-btns">
+      <a href="#" title="Attach" @click="attachFile"
+        ><i data-eva="attach-2-outline" :data-eva-fill="accent"></i
+      ></a>
+      <a href="#" title="Send" @click="manualSend"
+        ><i data-eva="paper-plane-outline" :data-eva-fill="accent"></i
+      ></a>
+    </div>
   </div>
-</div>
 </template>
 
 <script>
@@ -13,17 +24,22 @@ import * as eva from 'eva-icons';
 export default {
   name: 'MessageInput',
   components: {},
-  emits: ["sendMessage"],
-  mounted() {
-    eva.replace();
+  props: {
+    typingList: Array
   },
+  emits: ["sendMessage",
+         "typing"],
   data() {
     let accent = getComputedStyle(document.documentElement).getPropertyValue('--accent');
     return {
-      accent
+      accent,
+      typingMessage: ""
     }
   },
   methods: {
+    sendTyping() {
+      this.$emit("typing");
+    },
     sendMessage(e) {
       this.$emit("sendMessage", e.target.innerText);
       e.target.innerText = "";
@@ -33,7 +49,30 @@ export default {
       console.log(inputBox);
       this.$emit("sendMessage", inputBox.innerText);
       inputBox.innerText = "";
+    },
+    constructTypingMessage() {
+      if (this.typingList.length > 0 && this.typingList.length < 2) {
+        let message = "";
+        this.typingList.forEach((item) => {
+          message = message + item;
+        });
+        return `${message} is typing...`;
+      } else if (this.typingList.length > 1) {
+        let message = "";
+        this.typingList.forEach((item) => {
+          message = message + item;
+        });
+        return `${message} and ${this.typingList.length - 1} more are typing`;
+      } else {
+        return "";
+      }
     }
+  },
+  mounted() {
+    eva.replace();
+    setInterval(() => {
+        this.typingMessage = this.constructTypingMessage();
+    }, 600);
   }
 }
 </script>
@@ -47,10 +86,19 @@ export default {
   display: block;
   grid-column: 1 / 2;
   grid-row: 3 / 3;
+  position: relative;
+}
+
+.typing {
+  position: absolute;
+  position: absolute;
+  left: 25px;
+  top: 0;
+  font-size: 0.8em;
 }
 
 .lightgray {
-  color: var(--text-secondary)
+  color: var(--text-secondary);
 }
 
 .active {
@@ -80,7 +128,7 @@ a {
   text-align: left;
   margin: 20px;
   z-index: 1;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 0.9em;
   width: auto;
   max-height: 5em;
@@ -92,8 +140,8 @@ a {
   border-width: 2px;
   border-radius: 0.4em;
   color: var(--text-primary);
-  transition: box-shadow 0.4s, border-color 0.4s,
-    background-color 0.4s, height 0.1s;
+  transition: box-shadow 0.4s, border-color 0.4s, background-color 0.4s,
+    height 0.1s;
   overflow-y: scroll;
 }
 

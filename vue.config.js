@@ -8,5 +8,8 @@ module.exports = {
         entry: path.join(__dirname, "./src/service-worker.js")
       })
     ]
+  },
+    devServer: {
+    disableHostCheck: true
   }
 };
