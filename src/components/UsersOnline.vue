@@ -28,8 +28,8 @@ export default {
       fetch(`${window.serverHost}/api/onlineusers`).then((res) => {
         return res.json();
       }).then((data) => {
-        console.log(data.online);
-        this.userList = data.online;
+        const set = new Set(data.online.map(item => JSON.stringify(item)));
+        this.userList = [...set].map(item => JSON.parse(item));
       })
     }
   }
