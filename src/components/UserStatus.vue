@@ -1,6 +1,6 @@
 <template>
 <div class="user-status" @click="openProfile" :title="titleAttribute">
-  <img src="https://cdn2.scratch.mit.edu/get_image/user/41216777_60x60.png" alt="">
+  <img :src="pfp" alt="">
   <span v-if="online" class="status active">
   </span>
   <span v-if="!online" class="status inactive">
@@ -14,7 +14,8 @@ export default {
   name: 'UserStatus',
   props: {
     name: String,
-    online: Boolean
+    online: Boolean,
+    pfp: String
   },
   methods: {
     openProfile() {
@@ -38,8 +39,11 @@ export default {
   display: inline-flex;
   background: var(--bg-tertiary);
   padding: 12px;
-  width: 70%;
+  width: 80%;
   border-radius: 0.5em;
+  height: max-content;
+  justify-self: center;
+  margin-bottom: 10px;
 }
 
 .user-status img {
