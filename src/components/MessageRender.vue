@@ -1,10 +1,9 @@
 <template>
 <div id="renderDiv" class="render-messages">
-<transition-group name="list"  @enter="scroll()">
-  <Message class="message-object" v-for="m in messageList" :msg="m" :key="m.id" />
-</transition-group>
+  <transition-group name="list"  @enter="scroll()">
+    <Message class="message-object" v-for="m in messageList" :msg="m" :key="m.id" />
+  </transition-group>
   <Message class="message-object" v-for="m in oldMessageList" :msg="m" :key="m.id" />
-
 </div>
 <MessageInput @sendMessage="sendMessage" @typing="$emit('typing')" :typingList="typingList" />
 </template>
@@ -29,6 +28,7 @@ export default {
       this.$emit("sendMessage", msg);
     },
     scroll() {
+      console.log(this.messageList);
       let messageDiv = document.getElementById('renderDiv');
       if (messageDiv.scrollTop < -99) {
         messageDiv.scroll(0, 100);

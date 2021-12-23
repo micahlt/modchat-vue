@@ -97,6 +97,9 @@ export default {
     window.addEventListener("focus", () => {
       that.blurred = false;
     });
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState == "visible") document.getElementById("favicon").href = "/favicon.ico";
+    });
     socket.on("connect", () => {
       console.log("Connected to server");
       socket.emit("authentication", {
@@ -112,6 +115,9 @@ export default {
         });
       });
       socket.on("message", obj => {
+          if (document.hidden) {
+              document.getElementById("favicon").href = "/favicon-unread.ico"
+          }
       if (obj.profilePicture.includes("?v=")) {
         obj.profilePicture = obj.profilePicture.slice(0, -3);
       }
@@ -121,7 +127,7 @@ export default {
         if (that.blurred) {
         if(obj.content.includes('@'+that.user.name)) {
                 new Notification("Modchat", {
-                  body: obj.username + " has mentioned YOU: '" + obj.content + "'",
+                  body: obj.username + " mentioned you: '" + obj.content + "'",
                   icon: "/img/512x512.png"
                 });
                 that.messageList.unshift(obj);
@@ -133,8 +139,8 @@ export default {
               });
               }
             }
+          that.messageList.unshift(obj);
           }
-      that.messageList.unshift(obj);
       });
     socket.on("isTyping", obj => {
       if (!that.typingList.includes(obj.username)) {
