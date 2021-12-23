@@ -5,11 +5,11 @@
   </a>
   <div class="gridcol-2">
     <a :href="`https://scratch.mit.edu/users/${msg.username}`" class="username" :title="`Visit ${msg.username} on Scratch`" target="_blank">{{ msg.username }} <span class="badge b-purple" v-if="isYou">YOU</span><span class="badge" v-if="msg.username == 'Modchat Bot'">BOT</span></a>
-    <div v-if="msg.type == 'text'" class="message-content" v-linkified:options="{ attributes: { style: 'color: var(--text-primary);font-weight:bold;text-decoration:none' }, formatHref: {
+    <div v-if="msg.type == 'text'" class="message-content">
+      <span v-safe-html="filteredContent" v-linkified:options="{ attributes: { style: 'color: var(--text-primary);font-weight:bold;text-decoration:none' }, formatHref: {
     mention: (href) => 'https://scratch.mit.edu/users' + href,
     hashtag: (href) => '#' + href.substring(1)
-  }}">
-      {{msg.content}} <a class=" msglink link-reply" href="#"><i data-eva="corner-up-left-outline" :data-eva-fill="textSecondary" :data-eva-height="fontSize" :data-eva-width="fontSize"></i></a><a class="msglink link-report" href="#"><i
+  }}"></span> <a class=" msglink link-reply" href="#"><i data-eva="corner-up-left-outline" :data-eva-fill="textSecondary" :data-eva-height="fontSize" :data-eva-width="fontSize"></i></a><a class="msglink link-report" href="#"><i
           data-eva="flag-outline" :data-eva-fill="textSecondary" :data-eva-height="fontSize" :data-eva-width="fontSize"></i></a>
     </div>
     <img v-else :src="msg.imgsrc" alt="">
@@ -44,32 +44,29 @@ export default {
       }
     },
     filteredContent() {
-      /*
-      let mentionsMessage;
-      this.msg.content.split(" ").forEach(word => {
-        if (word[0] == "@") {
-          const USERNAME_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
-          let mentionName = "";
-          let i = 1;
-          while (USERNAME_CHARS.includes(word[i])) {
-            mentionName += word[i];
-            i++;
-          }
-          let afterName = word.slice(i);
-          const link = '<a class="mention" target="_blank" href="https://scratch.mit.edu/users/' + mentionName + '">@' + mentionName + "</a>"; // creates a link relevant to the user
-          mentionsMessage = mentionsMessage + link + afterName + " ";
-        } else if (word.startsWith("https://") || word.startsWith("http://")) {
-          const link = '<a class="mention" target="_blank" href="' + word + '">' + word + "</a> "; // creates a link
-          mentionsMessage = mentionsMessage + link;
-        } else if (word[0] == "#") {
-          const link = '<a class="mention" target="" href="/chat?r=' + word.substring(1, word.length) + '">' + word + "</a> "; // creates a link relevant to the room
-          mentionsMessage = mentionsMessage + link;
-        } else {
-          mentionsMessage = mentionsMessage + word + " ";
-        }
-      });
-      return mentionsMessage; */
-      return this.msg.content;
+      let mentionsMessage = '';
+      let originalMessage = this.msg.content; 
+    originalMessage.split(" ").forEach(word => {
+    if (word[0] == "@") {
+      const USERNAME_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
+      let mentionName = "";
+      let i = 1;
+      while (USERNAME_CHARS.includes(word[i])) {
+        mentionName += word[i];
+        i++;
+      }
+      let afterName = word.slice(i);
+      const link = `<a class="mention" style="font-weight: bold; color: var(--text-primary); text-decoration: none;" target="_blank" href="https://scratch.mit.edu/users/${mentionName}">@${mentionName}</a>`; // creates a link relevant to the user
+      mentionsMessage = mentionsMessage + link + afterName + " ";
+    } else {
+      mentionsMessage = mentionsMessage + word + " ";
+    }
+  });
+      if(!mentionsMessage) {
+        return originalMessage;
+      } else {
+      return mentionsMessage;
+      }
     }
   }
 }
@@ -113,7 +110,7 @@ export default {
   opacity: 1;
   transition: 0.2s;
 }
-
+  
 .msglink {
   opacity: 0;
   transition: 0.2s;
@@ -126,10 +123,6 @@ export default {
 
 .msglink svg {
   transform: translateY(4px);
-}
-
-a.linkified {
-  color: var(--text-primary) !important;
 }
 
 .gridcol-2 {

@@ -1,27 +1,37 @@
 <template :class="theme">
-<NavBar :room="currentRoom" class="navbar" @roomSearch="roomChange" />
-<MessageRender class="messages" @sendMessage="sendMessage" :messageList="messageList" @typing="typing" :typingList="typingList" />
-<UsersOnline class="users" />
-<transition-group name="fade">
-  <LoginModal class="modal" @logIn="logIn" v-if="!isLoggedIn" />
-  <div class="modal-blocker" v-if="!isLoggedIn"></div>
-</transition-group>
+  <NavBar :room="currentRoom" class="navbar" @roomSearch="roomChange" />
+  <MessageRender
+    class="messages"
+    @sendMessage="sendMessage"
+    :messageList="messageList"
+    :oldMessageList="oldMessageList"
+    @typing="typing"
+    :typingList="typingList"
+  />
+  <UsersOnline class="users" />
+  <transition-group name="fade">
+    <LoginModal class="modal" @logIn="logIn" v-if="!isLoggedIn" />
+    <div class="modal-blocker" v-if="!isLoggedIn"></div>
+  </transition-group>
 </template>
 
 <script>
 // These global variables are used to provide API and redirect routes.  You can change these by changing your environment variables.  There's a good tutorial here: https://www.twilio.com/blog/2017/01/how-to-set-environment-variables.html
 window.serverHost = process.env.VUE_APP_SERVER;
 window.clientHost = process.env.VUE_APP_CLIENT;
-import {
-  io
-} from "socket.io-client";
-import MessageRender from './components/MessageRender.vue';
-import NavBar from './components/NavBar.vue';
-import UsersOnline from './components/UsersOnline.vue';
-import LoginModal from './components/LoginModal.vue';
+import { io } from "socket.io-client";
+import MessageRender from "./components/MessageRender.vue";
+import NavBar from "./components/NavBar.vue";
+import UsersOnline from "./components/UsersOnline.vue";
+import LoginModal from "./components/LoginModal.vue";
 const socket = io(window.serverHost);
+
+if (Notification.permission == "default") {
+  Notification.requestPermission();
+}
+
 export default {
-  name: 'App',
+  name: "App",
   components: {
     NavBar,
     MessageRender,
@@ -35,19 +45,17 @@ export default {
       that.currentRoom = name.substring(1);
       that.messageList = [];
       socket.emit("joinRoom", {
-        "username": that.user.name,
-        "roomname": that.currentRoom
+        username: that.user.name,
+        roomname: that.currentRoom
       });
-      console.log('changeRoom:' + name)
     },
     enableModal() {
       this.modalEnabled = true;
     },
     sendMessage(msg) {
       let that = this;
-      console.log(that.user.name)
       socket.emit("chat", {
-        type: 'text',
+        type: "text",
         content: msg,
         username: that.user.name
       });
@@ -57,67 +65,101 @@ export default {
       socket.emit("userTyping", {
         username: that.user.name,
         room: that.currentRoom
-      })
+      });
     }
   },
   data() {
-    if (!window.localStorage.getItem('user')) {
-      window.localStorage.setItem('user', `{
+    if (!window.localStorage.getItem("user")) {
+      window.localStorage.setItem(
+        "user",
+        `{
         "name": "Unauthed User",
         "token": 0,
         "password": ""
-      }`);
+      }`
+      );
       window.location.reload();
     }
     return {
-      currentRoom: 'general',
-      user: JSON.parse(window.localStorage.getItem('user')),
+      currentRoom: "general",
+      user: JSON.parse(window.localStorage.getItem("user")),
       messageList: [],
-      typingList: []
-    }
+      oldMessageList: [],
+      typingList: [],
+      blurred: false
+    };
   },
   mounted() {
     let that = this;
+    window.addEventListener("blur", () => {
+      that.blurred = true;
+    });
+    window.addEventListener("focus", () => {
+      that.blurred = false;
+    });
     socket.on("connect", () => {
-      console.log('Connected to server');
-      socket.emit('authentication', {
+      console.log("Connected to server");
+      socket.emit("authentication", {
         username: that.user.name,
         password: that.user.password
       });
-      console.log('Submitted auth');
-      socket.on('authenticated', function() {
-        console.log('Successfully authed');
+      console.log("Submitted auth");
+      socket.on("authenticated", function() {
+        console.log("Successfully authed");
         socket.emit("joinRoom", {
-          "username": that.user.name,
-          "roomname": that.currentRoom
-        });
-        socket.on("message", (obj) => {
-          console.log('Recieved a message');
-          if (obj.profilePicture.includes("?v=")) {
-            obj.profilePicture = obj.profilePicture.slice(0, -3);
-          }
-          that.messageList.unshift(obj);
-          console.log(that.messageList);
-        });
-        socket.on("isTyping", (obj) => {
-          if (!that.typingList.includes(obj.username)) {
-            console.log(obj.username);
-            if (that.user.name != obj.username) {
-              that.typingList.push(obj.username);
-            }
-          }
-          window.setTimeout(() => {
-            that.typingList.splice(that.typingList.indexOf(obj.username));
-          }, 600);
+          username: that.user.name,
+          roomname: that.currentRoom
         });
       });
+      socket.on("message", obj => {
+      if (obj.profilePicture.includes("?v=")) {
+        obj.profilePicture = obj.profilePicture.slice(0, -3);
+      }
+      if (obj.old) {
+        that.oldMessageList.unshift(obj);
+      } else {
+        if (that.blurred) {
+        if(obj.content.includes('@'+that.user.name)) {
+                new Notification("Modchat", {
+                  body: obj.username + " has mentioned YOU: '" + obj.content + "'",
+                  icon: "/img/512x512.png"
+                });
+                that.messageList.unshift(obj);
+                return false;
+              } else {
+                new Notification("Modchat", {
+                body: obj.username + ": '" + obj.content + "'",
+                icon: "/img/512x512.png"
+              });
+              }
+            }
+          }
+      that.messageList.unshift(obj);
+      });
+    socket.on("isTyping", obj => {
+      if (!that.typingList.includes(obj.username)) {
+        if (that.user.name != obj.username) {
+          that.typingList.push(obj.username);
+        }
+      }
+      window.setTimeout(() => {
+        that.typingList.splice(that.typingList.indexOf(obj.username));
+      }, 600);
     });
-
+    });
+    socket.on("disconnect", () => {
+      socket.off("isTyping");
+      socket.off("message");
+      socket.off("authenticated");
+    });
   },
   computed: {
     isLoggedIn() {
-      if (window.localStorage.getItem('user')) {
-        if (JSON.parse(window.localStorage.getItem('user')).name == 'Unauthed User') {
+      if (window.localStorage.getItem("user")) {
+        if (
+          JSON.parse(window.localStorage.getItem("user")).name ==
+          "Unauthed User"
+        ) {
           return false;
         } else {
           return true;
@@ -127,12 +169,12 @@ export default {
       }
     }
   }
-}
+};
 </script>
 
 <style>
 #app {
-  font-family: 'Inter', Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Inter", Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

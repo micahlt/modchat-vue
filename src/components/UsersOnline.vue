@@ -21,7 +21,7 @@ export default {
   },
   mounted() {
     this.update();
-    window.setInterval(this.update, 10000);
+    window.setInterval(this.update, 4000);
   }, 
   methods: {
     update() {

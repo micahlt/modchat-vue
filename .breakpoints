@@ -1,0 +1,20 @@
+{
+  "files": {
+    "src/components/Message.vue": [
+      {
+        "id": "34e72480-115a-4182-819a-64c9024476df",
+        "line": 8,
+        "version": 1280,
+        "index": 614
+      }
+    ],
+    "src/components/WordCounter.vue": [
+      {
+        "id": "dee76ef6-2db4-4c11-987b-d26276923227",
+        "line": 16,
+        "version": 1,
+        "index": 224
+      }
+    ]
+  }
+}

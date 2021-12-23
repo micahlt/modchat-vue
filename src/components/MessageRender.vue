@@ -1,7 +1,11 @@
 <template>
-<transition-group tag="div" id="renderDiv" name="list" class="render-messages" @enter="scroll()">
+<div id="renderDiv" class="render-messages">
+<transition-group name="list"  @enter="scroll()">
   <Message class="message-object" v-for="m in messageList" :msg="m" :key="m.id" />
 </transition-group>
+  <Message class="message-object" v-for="m in oldMessageList" :msg="m" :key="m.id" />
+
+</div>
 <MessageInput @sendMessage="sendMessage" @typing="$emit('typing')" :typingList="typingList" />
 </template>
 
@@ -16,19 +20,9 @@ export default {
     Message
   },
   props: {
+    oldMessageList: Array,
     messageList: Array,
     typingList: Array
-  },
-  data() {
-    console.log(this.messageList)
-    return {
-      msg: {
-        profilePicture: 'https://cdn2.scratch.mit.edu/get_image/user/1882674_60x60.png',
-        username: 'griffpatch',
-        content: `Hey there y'all!`,
-        type: 'text'
-      }
-    }
   },
   methods: {
     sendMessage(msg) {

@@ -17,6 +17,9 @@ export default {
   components: {},
   emits: ["roomSearch", "logOut"],
   data() {
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {this.updateSuggestions({target: {value: ''}})}, 2000);
+    });
     return {
       autocompleteOpen: false,
       builtInSuggestions: [{
@@ -54,9 +57,9 @@ export default {
         }
       }
     },
-    updateSuggestions() {
-      this.currentSuggestions = this.builtInSuggestions.filter(s => s.label.includes(event.target.value));
-      if (event.target.value.length > 0) {
+    updateSuggestions(e) {
+      this.currentSuggestions = this.builtInSuggestions.filter(s => s.label.includes(e.target.value));
+      if (e.target.value.length > 0) {
         this.currentSuggestions.unshift({
           "label": `#${event.target.value.replace(/\s+/g, '-')}`,
           "type": "room"
