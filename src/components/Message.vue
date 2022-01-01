@@ -1,15 +1,12 @@
 <template>
 <div class="message">
-  <a :href="`https://scratch.mit.edu/users/${msg.username}`" class="username" :title="`Visit ${msg.username} on Scratch`" target="_blank">
+  <base target="_blank">
+  <a :href="`https://scratch.mit.edu/users/${msg.username}`" class="username" :title="`Visit ${msg.username} on Scratch`">
     <img :src="msg.profilePicture" class="pic" :alt="msg.username">
   </a>
   <div class="gridcol-2">
-    <a :href="`https://scratch.mit.edu/users/${msg.username}`" class="username" :title="`Visit ${msg.username} on Scratch`" target="_blank">{{ msg.username }} <span class="badge b-purple" v-if="isYou">YOU</span><span class="badge" v-if="msg.username == 'Modchat Bot'">BOT</span></a>
-    <div v-if="msg.type == 'text'" class="message-content">
-      <span v-safe-html="filteredContent" v-linkified:options="{ attributes: { style: 'color: var(--text-primary);font-weight:bold;text-decoration:none' }, formatHref: {
-    mention: (href) => 'https://scratch.mit.edu/users' + href,
-    hashtag: (href) => '#' + href.substring(1)
-  }}"></span> <a class=" msglink link-reply" href="#"><i data-eva="corner-up-left-outline" :data-eva-fill="textSecondary" :data-eva-height="fontSize" :data-eva-width="fontSize"></i></a><a class="msglink link-report" href="#"><i
+    <a :href="`https://scratch.mit.edu/users/${msg.username}`" class="username" :title="`Visit ${msg.username} on Scratch`">{{ msg.username }} <span class="badge b-purple" v-if="isYou">YOU</span></a>
+    <div v-if="msg.type == 'text'" class="message-content"><Markdown class="md" :source="filteredContent" :linkify="true" /> <a class="msglink link-reply" href="#"><i data-eva="corner-up-left-outline" :data-eva-fill="textSecondary" :data-eva-height="fontSize" :data-eva-width="fontSize"></i></a><a class="msglink link-report" href="#"><i
           data-eva="flag-outline" :data-eva-fill="textSecondary" :data-eva-height="fontSize" :data-eva-width="fontSize"></i></a>
     </div>
     <img v-else :src="msg.imgsrc" alt="">
@@ -19,10 +16,14 @@
 
 <script>
 import * as eva from 'eva-icons';
+import Markdown from 'vue3-markdown-it';
 export default {
   name: 'Message',
   props: {
     msg: Object
+  },
+  components: {
+    Markdown
   },
   mounted() {
     eva.replace();
@@ -56,7 +57,7 @@ export default {
         i++;
       }
       let afterName = word.slice(i);
-      const link = `<a class="mention" style="font-weight: bold; color: var(--text-primary); text-decoration: none;" target="_blank" href="https://scratch.mit.edu/users/${mentionName}">@${mentionName}</a>`; // creates a link relevant to the user
+      const link = `[@${mentionName}](https://scratch.mit.edu/users/${mentionName})`; // creates a link relevant to the user
       mentionsMessage = mentionsMessage + link + afterName + " ";
     } else {
       mentionsMessage = mentionsMessage + word + " ";
@@ -82,7 +83,6 @@ export default {
   margin-right: auto;
   margin-bottom: 10px;
 }
-
 .pic {
   grid-column: 1 / 1;
   height: 35px;
@@ -91,7 +91,6 @@ export default {
   background: white;
   border: solid 2px var(--outline);
 }
-
 .username {
   color: var(--text-secondary);
   font-weight: bolder;
@@ -99,16 +98,21 @@ export default {
   text-decoration: none;
   font-size: 0.8em;
 }
-
 .message-content {
   color: var(--text-primary);
   word-wrap: break-word;
-  font-size: 0.85em;
+  font-size: 0.9em;
+  display: flex;
 }
-
 .message-content:hover .msglink {
   opacity: 1;
   transition: 0.2s;
+}
+
+.md >>> a {
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: bold;
 }
   
 .msglink {
@@ -116,22 +120,19 @@ export default {
   transition: 0.2s;
   transform: translateY(2px);
 }
-
 .msglink:first-of-type {
   margin-left: 5px;
 }
-
 .msglink svg {
   transform: translateY(4px);
 }
-
+  
 .gridcol-2 {
   margin-left: 15px;
   margin-top: -2px;
   grid-column: 2 / 2;
   text-align: left;
 }
-
 .badge {
   background: white;
   margin-left: 4px;
@@ -139,7 +140,6 @@ export default {
   font-size: 0.7em;
   border-radius: 0.7em;
 }
-
 .b-purple {
   color: white;
   background: var(--light-accent);

@@ -1,8 +1,8 @@
 import {
   createApp
 } from 'vue';
-import linkify from './linkifyfork/other.js';
 import VueSafeHTML from 'vue-safe-html';
+import Markdown from 'vue3-markdown-it';
 import Mouseover from 'vue-mouseover';
 import App from './App.vue';
 import runtime from "serviceworker-webpack-plugin/lib/runtime";
@@ -38,8 +38,8 @@ switch (window.localStorage.getItem('theme')) {
 }
 
 let app = createApp(App);
-app.directive('linkified', linkify);
 app.use(Mouseover);
+app.use(Markdown);
 app.use(VueSafeHTML, {
   allowedTags: ['a'],
 });

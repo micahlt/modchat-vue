@@ -63,6 +63,7 @@ export default {
         }).then((data) => {
           console.log("Recieved session data:", data);
           if (data.user_name) {
+            console.log(data);
             this.user = {
               "name": data.user_name,
               "token": data.session,
