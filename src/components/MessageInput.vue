@@ -7,6 +7,7 @@
       @keydown.enter.prevent="sendMessage($event)"
       enterkeyhint="send"
       @keydown="sendTyping"
+      @paste="handlePaste($event)"
     ></div>
     <div class="action-btns">
       <a href="#" title="Attach" @click="attachFile"
@@ -73,6 +74,17 @@ export default {
     setInterval(() => {
         this.typingMessage = this.constructTypingMessage();
     }, 600);
+  },
+  handlePaste(e) {
+    if (e.clipboardData) {
+      content = e.clipboardData.getData('Text');        
+      if (window.getSelection) {
+        var selection = window.getSelection();
+        var range = selection.getRangeAt(0);
+        range.deleteContents();
+        range.insertNode(document.createTextNode(content));
+      }
+    }
   }
 }
 </script>
