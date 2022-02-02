@@ -5,7 +5,9 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "check": "prettier --check .",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "caniuse-lite": "^1.0.30001282",

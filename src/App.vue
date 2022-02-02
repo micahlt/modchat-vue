@@ -1,5 +1,6 @@
 <template :class="theme">
-  <NavBar :room="currentRoom" class="navbar" @roomSearch="roomChange" />
+  <Banned class="banned" v-if="isBanned"/>
+  <NavBar :room="currentRoom" class="navbar" @roomSearch="roomChange" v-if="!isBanned"/>
   <MessageRender
     class="messages"
     @sendMessage="sendMessage"
@@ -7,10 +8,11 @@
     :oldMessageList="oldMessageList"
     @typing="typing"
     :typingList="typingList"
+    v-if="!isBanned"
   />
-  <UsersOnline class="users" />
+  <UsersOnline class="users" v-if="!isBanned"/>
   <transition-group name="fade">
-    <LoginModal class="modal" @logIn="logIn" v-if="!isLoggedIn" />
+    <LoginModal class="modal" @logIn="logIn($event)" @signUp="signUp($event)" v-if="!isLoggedIn" />
     <div class="modal-blocker" v-if="!isLoggedIn"></div>
   </transition-group>
 </template>
@@ -24,19 +26,23 @@ import MessageRender from "./components/MessageRender.vue";
 import NavBar from "./components/NavBar.vue";
 import UsersOnline from "./components/UsersOnline.vue";
 import LoginModal from "./components/LoginModal.vue";
-const socket = io(window.serverHost);
+import Banned from "./components/Banned.vue"
+const socket = io(window.serverHost, {
+  withCredentials: true,
+  autoConnect: false
+});
 
 if (Notification.permission == "default") {
   Notification.requestPermission();
 }
-
 export default {
   name: "App",
   components: {
     NavBar,
     MessageRender,
     UsersOnline,
-    LoginModal
+    LoginModal,
+    Banned
   },
   methods: {
     roomChange(name) {
@@ -46,7 +52,8 @@ export default {
       that.messageList = [];
       socket.emit("joinRoom", {
         username: that.user.name,
-        roomname: that.currentRoom
+        roomname: that.currentRoom,
+        access_token: this.access_token
       });
     },
     enableModal() {
@@ -57,7 +64,8 @@ export default {
       socket.emit("chat", {
         type: "text",
         content: msg,
-        username: that.user.name
+        username: that.user.name,
+        access_token: this.access_token
       });
     },
     typing() {
@@ -66,6 +74,56 @@ export default {
         username: that.user.name,
         room: that.currentRoom
       });
+    },
+    logIn(event) {
+      console.log("event:", event);
+      let that = this;
+      let user = JSON.parse(window.localStorage.getItem('user'));
+      fetch(`${this.serverURL}/api/login`, {
+          method: "POST",
+          body: JSON.stringify({
+            "username": event.username,
+            "password": event.password
+          }),
+          headers: {
+            "Content-Type": "application/json; charset=utf-8"
+          },
+          credentials: 'include'
+        }).then((response) => {
+          if (response.ok) {
+            user.name = event.username;
+            return response.json();
+          }
+        })
+        .then((data) => {
+          that.access_token = data.access_token;
+          window.localStorage.setItem('user', JSON.stringify(user));
+          window.location.href = window.location.href.split('?')[0];
+          window.location.reload();
+        });
+    },
+    signUp(event) {
+      fetch(`${this.serverURL}/api/updatepassword`, {
+        method: "POST",
+        body: JSON.stringify({
+          "username": JSON.parse(window.localStorage.getItem('user')).name,
+          "password": event.password
+        }),
+        headers: {
+          "Content-Type": "application/json; charset=utf-8"
+        }
+      }).then((response) => {
+        if (response.ok) {
+          return response;
+        }
+      }).then(() => {
+        let user = JSON.parse(window.localStorage.getItem('user'));
+        window.localStorage.setItem('user', JSON.stringify(user));
+        this.logIn({
+          username: user.name,
+          password: event.password
+        })
+      });
     }
   },
   data() {
@@ -73,9 +131,7 @@ export default {
       window.localStorage.setItem(
         "user",
         `{
-        "name": "Unauthed User",
-        "token": 0,
-        "password": ""
+        "name": "Unauthed User"
       }`
       );
       window.location.reload();
@@ -86,11 +142,32 @@ export default {
       messageList: [],
       oldMessageList: [],
       typingList: [],
-      blurred: false
+      blurred: false,
+      access_token: null
     };
   },
   mounted() {
     let that = this;
+    fetch(`${process.env.VUE_APP_SERVER}/api/refresh`, {
+      method: "POST",
+      body: JSON.stringify({
+        "username": that.user.name
+      }),
+      headers: {
+        "Content-Type": "application/json; charset=utf-8"
+      },
+      credentials: 'include'
+      }).then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        } else if (res.status == 403) {
+          window.localStorage.setItem("user", `{"name": "Unauthed User"}`);
+          window.location.reload();
+        }
+      }).then((data) => {
+        that.access_token = data.access_token;
+        socket.connect();
+      
     window.addEventListener("blur", () => {
       that.blurred = true;
     });
@@ -102,17 +179,23 @@ export default {
     });
     socket.on("connect", () => {
       console.log("Connected to server");
-      socket.emit("authentication", {
-        username: that.user.name,
-        password: that.user.password
-      });
-      console.log("Submitted auth");
-      socket.on("authenticated", function() {
-        console.log("Successfully authed");
         socket.emit("joinRoom", {
           username: that.user.name,
-          roomname: that.currentRoom
+          roomname: that.currentRoom,
+          access_token: that.access_token
         });
+      });
+      socket.on("bannedUser", function(data) {
+          console.log(data);
+                  window.localStorage.setItem(
+        "user",
+        `{
+        "name": "Banned User",
+        "reason": "${data.reason}",
+        "expiry": "${data.expiry}"
+      }`
+        );
+        window.location.reload();
       });
       socket.on("message", obj => {
           if (document.hidden) {
@@ -142,6 +225,32 @@ export default {
           that.messageList.unshift(obj);
           }
       });
+
+    socket.on("refresh", (object) => {
+      fetch(`${process.env.VUE_APP_SERVER}/api/refresh`, {
+      method: "POST",
+      body: JSON.stringify({
+        "username": that.user.name
+      }),
+      headers: {
+        "Content-Type": "application/json; charset=utf-8"
+      },
+      credentials: 'include'
+      }).then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        } else {
+        window.localStorage.setItem(
+        "user", `{"name": "Unauthed User"}`
+        );
+        window.location.reload();
+        }
+      }).then((data) => {
+        object.args.access_token = data.access_token;
+        this.access_token = data.access_token;
+        socket.emit(object.name, object.args, data.access_token);
+      })
+    });
     socket.on("isTyping", obj => {
       if (!that.typingList.includes(obj.username)) {
         if (that.user.name != obj.username) {
@@ -152,12 +261,12 @@ export default {
         that.typingList.splice(that.typingList.indexOf(obj.username));
       }, 600);
     });
-    });
     socket.on("disconnect", () => {
       socket.off("isTyping");
       socket.off("message");
       socket.off("authenticated");
     });
+  })
   },
   computed: {
     isLoggedIn() {
@@ -171,6 +280,29 @@ export default {
           return true;
         }
       } else {
+        return false;
+      }
+    },
+    clientURL() {
+      let root = window.clientHost;
+      return root;
+    },
+    serverURL() {
+      let root = window.serverHost;
+      return root;
+    },
+    isBanned() {
+      const storage = JSON.parse(window.localStorage.getItem("user"));
+      if(storage.name == "Banned User")  {
+        return true;
+      } else {
+        if(JSON.parse(window.localStorage.getItem("user")).name == "Banned User") {
+        window.localStorage.setItem(
+          "user",
+          `{
+          "name": "Unauthed User"
+        }`);
+        }
         return false;
       }
     }
@@ -204,7 +336,7 @@ export default {
 }
 
 .users {
-  grid-row: 1 / 4;
+  grid-row: 2 / 4;
   grid-column: 2 / 3;
 }
 
@@ -241,5 +373,9 @@ export default {
   .messages {
     grid-column: 1 / 3;
   }
+}
+
+.banned {
+  grid-column: 1 / 4;
 }
 </style>

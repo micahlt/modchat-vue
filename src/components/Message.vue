@@ -5,7 +5,7 @@
     <img :src="msg.profilePicture" class="pic" :alt="msg.username">
   </a>
   <div class="gridcol-2">
-    <a :href="`https://scratch.mit.edu/users/${msg.username}`" class="username" :title="`Visit ${msg.username} on Scratch`">{{ msg.username }} <span class="badge b-purple" v-if="isYou">YOU</span></a>
+    <a :href="`https://scratch.mit.edu/users/${msg.username}`" class="username" :title="`Visit ${msg.username} on Scratch`">{{ msg.username }} <span class="badge b-purple" v-if="isYou">YOU</span><span class="badge b-gray" v-if="msg.username == 'Modchat Bot'">BOT</span></a>
     <div v-if="msg.type == 'text'" class="message-content"><Markdown class="md" :source="filteredContent" :linkify="true" /> <a class="msglink link-reply" href="#"><i data-eva="corner-up-left-outline" :data-eva-fill="textSecondary" :data-eva-height="fontSize" :data-eva-width="fontSize"></i></a><a class="msglink link-report" href="#"><i
           data-eva="flag-outline" :data-eva-fill="textSecondary" :data-eva-height="fontSize" :data-eva-width="fontSize"></i></a>
     </div>
@@ -114,6 +114,12 @@ export default {
   text-decoration: none;
   font-weight: bold;
 }
+
+.md >>> code {
+  background: var(--bg-tertiary);
+  padding: 3px;
+  border-radius: 4px;
+}
   
 .msglink {
   opacity: 0;
@@ -143,5 +149,10 @@ export default {
 .b-purple {
   color: white;
   background: var(--light-accent);
+}
+
+.b-gray {
+  color: white;
+  background: var(--bg-tertiary);
 }
 </style>
