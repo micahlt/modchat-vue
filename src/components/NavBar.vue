@@ -13,9 +13,9 @@
   </div>
   <div class="grid-2">
     <div class="nav-options">
-      <a href="#" title="Notifications"><i data-eva="bell-outline" data-eva-fill="#ddd"></i></a>
-      <a href="#" title="Change Theme" @click="changeTheme"><i data-eva="moon-outline" :data-eva-fill="textColor"></i></a>
-      <a href="#" title="Log Out" @click="logOut"><i data-eva="log-out" :data-eva-fill="textColor"></i></a>
+      <a href="#" target="_self" title="Notifications"><i data-eva="bell-outline" data-eva-fill="#ddd"></i></a>
+      <a href="#" target="_self" title="Change Theme" @click="changeTheme"><i data-eva="moon-outline" :data-eva-fill="textColor"></i></a>
+      <a href="#" target="_self" title="Log Out" @click="logOut"><i data-eva="log-out" :data-eva-fill="textColor"></i></a>
     </div>
     <div class="logo"></div>
   </div>
@@ -52,8 +52,19 @@ export default {
         "name": "Unauthed User",
         "token": 0
       }`);
+      fetch(`${process.env.VUE_APP_SERVER}/api/logout`, {
+          method: "POST",
+          body: JSON.stringify({
+            "username": JSON.parse(localStorage.getItem('user')).name
+          }),
+          headers: {
+            "Content-Type": "application/json; charset=utf-8"
+          },
+          credentials: 'include'
+    }).then(() => {
       window.location.reload();
-    },
+    })
+     },
     changeTheme() {
       switch (window.localStorage.getItem('theme')) {
         case ('default'): {
@@ -92,7 +103,7 @@ export default {
 .grid-2 {
   display: flex;
   align-items: center;
-  justify-content: end;
+  justify-content: flex-end;
 }
 
 .nav-options {
@@ -129,8 +140,10 @@ i {
   background-image: var(--logo);
   background-size: contain;
   height: var(--height);
-  width: calc(var(--height) * 7);
+  width: calc(var(--height)*7.1);
   margin: 0 1.2em;
+  background-repeat: no-repeat;
+  padding-top: 2px;
 }
 
 .room-name {
@@ -150,6 +163,7 @@ i {
   height: 20px;
   width: 20px;
   user-select: none;
+  line-height: 1em;
 }
 
 .letter::after {

@@ -2,7 +2,7 @@
 <div class="wrapper">
   <input @blur="closeAutocomplete" @click="openAutocomplete" @input="updateSuggestions($event)" type="text" name="" value="" placeholder="create or join a room...">
   <div id="autocomplete" :class="{active: autocompleteOpen}">
-    <a href="#" v-for="s in currentSuggestions" :key="s.label" @click="performAction(s)" :title="genTitle(s)">
+    <a href="#" target="_self" v-for="s in currentSuggestions" :key="s.label" @click="performAction(s)" :title="genTitle(s)">
       <div class="suggestion">
         {{ s.label }} <span class="lightgray">({{ s.type }})</span>
       </div>

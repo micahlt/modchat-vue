@@ -25,11 +25,11 @@ export default {
 .user-popup {
   z-index: 2;
   position: absolute;
-  width: 200px;
+  width: 80%;
   height: max-content;
   background: var(--bg-tertiary);
   top: 4.2em;
-  right: 0;
+  left: 6px;
   border-radius: 0.3em;
   box-shadow: var(--shadow);
   padding: 1em;

@@ -1,18 +1,15 @@
 <template>
-  <div class="wrapper">
-    <div class="typing lightgray">{{ typingMessage }}</div>
-    <div
+  <div class="wrapper">    <div
       contenteditable
       class="input"
       @keydown.enter.prevent="sendMessage($event)"
       enterkeyhint="send"
       @keydown="sendTyping"
+      @paste="handlePaste($event)"
     ></div>
+    <div class="typing lightgray">{{ typingMessage }}</div>
     <div class="action-btns">
-      <a href="#" title="Attach" @click="attachFile"
-        ><i data-eva="attach-2-outline" :data-eva-fill="accent"></i
-      ></a>
-      <a href="#" title="Send" @click="manualSend"
+      <a title="Send" @click="manualSend($event)"
         ><i data-eva="paper-plane-outline" :data-eva-fill="accent"></i
       ></a>
     </div>
@@ -37,6 +34,15 @@ export default {
     }
   },
   methods: {
+    handlePaste(e) {
+    let clipboardData, pastedData
+    e.stopPropagation();
+    e.preventDefault();
+
+    clipboardData = e.clipboardData || window.clipboardData;
+    pastedData = clipboardData.getData('Text');
+    window.document.execCommand('insertText', false, pastedData);
+  },
     sendTyping() {
       this.$emit("typing");
     },
@@ -87,6 +93,7 @@ export default {
   grid-column: 1 / 2;
   grid-row: 3 / 3;
   position: relative;
+  z-index: 2;
 }
 
 .typing {
@@ -143,6 +150,10 @@ a {
   transition: box-shadow 0.4s, border-color 0.4s, background-color 0.4s,
     height 0.1s;
   overflow-y: scroll;
+}
+
+.file {
+  display: none;
 }
 
 .input:focus {

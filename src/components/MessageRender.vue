@@ -28,7 +28,6 @@ export default {
       this.$emit("sendMessage", msg);
     },
     scroll() {
-      console.log(this.messageList);
       let messageDiv = document.getElementById('renderDiv');
       if (messageDiv.scrollTop < -99) {
         messageDiv.scroll(0, 100);
