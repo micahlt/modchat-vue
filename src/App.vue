@@ -81,15 +81,15 @@ export default {
       let that = this;
       let user = JSON.parse(window.localStorage.getItem('user'));
       fetch(`${this.serverURL}/api/login`, {
-          method: "POST",
-          body: JSON.stringify({
-            "username": event.username,
-            "password": event.password
-          }),
-          headers: {
-            "Content-Type": "application/json; charset=utf-8"
-          },
-          credentials: 'include'
+        method: "POST",
+        body: JSON.stringify({
+          "username": event.username,
+          "password": event.password
+        }),
+        headers: {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        credentials: 'include'
         }).then((response) => {
           if (response.ok) {
             user.name = event.username;
@@ -109,6 +109,12 @@ export default {
           } else if (data.reason == "notSignedUp") {
             this.loginErr = "Please make sure you've signed up with Scratch."
           }
+        })
+        .then((data) => {
+          that.access_token = data.access_token;
+          window.localStorage.setItem('user', JSON.stringify(user));
+          window.location.href = window.location.href.split('?')[0];
+          window.location.reload();
         });
     },
     signUp(event) {
