@@ -231,11 +231,11 @@ export default {
                 });
                 that.messageList.unshift(obj);
                 return false;
-              } else {
+              }/* else {
                 new Notification("Modchat", {
-                body: obj.username + ": '" + obj.content + "'",
-                icon: "/img/512x512.png"
-              });
+                  body: obj.username + ": '" + obj.content + "'",
+                  icon: "/img/512x512.png"
+                }); this is commented out because ATM notifications get spammy */
               }
             }
           that.messageList.unshift(obj);
