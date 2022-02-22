@@ -235,8 +235,8 @@ export default {
                 new Notification("Modchat", {
                   body: obj.username + ": '" + obj.content + "'",
                   icon: "/img/512x512.png"
-                }); this is commented out because ATM notifications get spammy */
-              }
+                }); this is commented out because ATM notifications get spammy
+              } */
             }
           that.messageList.unshift(obj);
           }
