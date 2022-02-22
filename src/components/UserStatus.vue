@@ -57,7 +57,7 @@ export default {
   },
   mounted() {
     this.loadOcular();
-    window.setInterval(this.loadOcular, 60000); // Keep this interval low so Jeffalo doesn't get spammed with API requestswait why
+    window.setInterval(this.loadOcular, 60000); // Keep this interval low so Jeffalo doesn't get spammed with API requests
   }
 }
 </script>

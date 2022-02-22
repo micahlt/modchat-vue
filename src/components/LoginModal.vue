@@ -25,6 +25,7 @@
         <PrimaryButton class="primary-btn" title="Log In" @click="logIn">Log In</PrimaryButton>
       </div>
     </transition-group>
+    <div class="error" v-if="error.length > 0">{{ error }}</div>
     <span class="footer"><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></span>
   </div>
 </div>
@@ -35,6 +36,10 @@ import TextBox from './TextBox.vue';
 import PrimaryButton from './PrimaryButton.vue';
 export default {
   name: 'LoginModal',
+  emits: ["logIn", "signUp"],
+  props: {
+    error: String
+  },
   data() {
     return {
       mode: 'landing',
@@ -56,7 +61,8 @@ export default {
           }),
           headers: {
             "Content-Type": "application/json; charset=utf-8"
-          }
+          },
+          credentials: 'include'
         }).then((res) => {
           this.mode = 'signup'
           return res.json();
@@ -66,16 +72,10 @@ export default {
             console.log(data);
             this.user = {
               "name": data.user_name,
-              "token": data.session,
-              "id": data.user_id
             }
             console.log(data.user_name)
             this.username = data.user_name
-            window.localStorage.setItem('user', `{
-              "name": "${data.user_name}",
-              "token": "${data.session}",
-              "id": ${data.user_id}
-            }`);
+            window.localStorage.setItem('user', JSON.stringify(this.user));
           }
         })
       }
@@ -90,53 +90,16 @@ export default {
       this.mode = 'login'
     },
     signUp() {
-      let that = this;
-      console.log(that.suPwd)
-      fetch(`${this.serverURL}/api/updatepassword`, {
-        method: "POST",
-        body: JSON.stringify({
-          "token": JSON.parse(window.localStorage.getItem('user')).token,
-          "password": that.suPwd
-        }),
-        headers: {
-          "Content-Type": "application/json; charset=utf-8"
-        }
-      }).then((response) => {
-        if (response.ok) {
-          return response;
-        }
-      }).then(() => {
-        let user = JSON.parse(window.localStorage.getItem('user'));
-        user.password = that.suPwd;
-        window.localStorage.setItem('user', JSON.stringify(user));
-        window.location.href = window.location.href.split('?')[0];
-      });
+      this.$emit("signUp", {
+        username: this.suUsr,
+        password: this.suPwd
+      })
     },
     logIn() {
-      let that = this;
-      let user = JSON.parse(window.localStorage.getItem('user'));
-      console.log(that.suPwd)
-      fetch(`${this.serverURL}/api/login`, {
-          method: "POST",
-          body: JSON.stringify({
-            "username": that.liUsr,
-            "password": that.liPwd
-          }),
-          headers: {
-            "Content-Type": "application/json; charset=utf-8"
-          }
-        }).then((response) => {
-          if (response.ok) {
-            user.password = that.liPwd;
-            user.name = that.liUsr;
-            return response.text()
-          }
-        })
-        .then(text => {
-          user.token = text;
-          window.localStorage.setItem('user', JSON.stringify(user));
-          window.location.reload();
-        });
+      this.$emit("logIn", {
+        username: this.liUsr,
+        password: this.liPwd
+      });
     }
   },
   computed: {
@@ -274,5 +237,11 @@ img {
 .footer a {
   color: var(--text-primary);
   padding: 0 0.8em;
+}
+
+.error {
+  color: var(--bad);
+  font-size: 0.8rem;
+  padding: 1rem 0.5rem;
 }
 </style>

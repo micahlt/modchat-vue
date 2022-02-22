@@ -3,17 +3,23 @@
     "src/components/Message.vue": [
       {
         "id": "34e72480-115a-4182-819a-64c9024476df",
-        "line": 8,
-        "version": 3099,
-        "index": 614
+        "line": 1,
+        "version": 3800,
+        "index": 0
       }
     ],
-    "src/components/WordCounter.vue": [
+    "src/components/MessageInput.vue": [
       {
-        "id": "dee76ef6-2db4-4c11-987b-d26276923227",
-        "line": 16,
-        "version": 1,
-        "index": 224
+        "id": "af71b6fd-bfb5-4227-a38b-e0c03842d238",
+        "line": 36,
+        "version": 2702,
+        "index": 853
+      },
+      {
+        "id": "5a110cc7-cb75-4e6f-959c-c18b3683e5b5",
+        "line": 149,
+        "version": 2702,
+        "index": 3390
       }
     ]
   }
