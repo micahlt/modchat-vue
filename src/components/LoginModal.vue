@@ -25,6 +25,7 @@
         <PrimaryButton class="primary-btn" title="Log In" @click="logIn">Log In</PrimaryButton>
       </div>
     </transition-group>
+    <div class="error" v-if="error.length > 0">{{ error }}</div>
     <span class="footer"><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></span>
   </div>
 </div>
@@ -36,6 +37,9 @@ import PrimaryButton from './PrimaryButton.vue';
 export default {
   name: 'LoginModal',
   emits: ["logIn", "signUp"],
+  props: {
+    error: String
+  },
   data() {
     return {
       mode: 'landing',
@@ -233,5 +237,11 @@ img {
 .footer a {
   color: var(--text-primary);
   padding: 0 0.8em;
+}
+
+.error {
+  color: var(--bad);
+  font-size: 0.8rem;
+  padding: 1rem 0.5rem;
 }
 </style>

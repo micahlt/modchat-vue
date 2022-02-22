@@ -12,7 +12,7 @@
   />
   <UsersOnline class="users" v-if="!isBanned"/>
   <transition-group name="fade">
-    <LoginModal class="modal" @logIn="logIn($event)" @signUp="signUp($event)" v-if="!isLoggedIn" />
+    <LoginModal class="modal" @logIn="logIn($event)" @signUp="signUp($event)" v-if="!isLoggedIn" :error="loginErr" />
     <div class="modal-blocker" v-if="!isLoggedIn"></div>
   </transition-group>
 </template>
@@ -76,23 +76,38 @@ export default {
       });
     },
     logIn(event) {
+      this.loginErr = "";
       console.log("event:", event);
       let that = this;
       let user = JSON.parse(window.localStorage.getItem('user'));
       fetch(`${this.serverURL}/api/login`, {
-          method: "POST",
-          body: JSON.stringify({
-            "username": event.username,
-            "password": event.password
-          }),
-          headers: {
-            "Content-Type": "application/json; charset=utf-8"
-          },
-          credentials: 'include'
+        method: "POST",
+        body: JSON.stringify({
+          "username": event.username,
+          "password": event.password
+        }),
+        headers: {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        credentials: 'include'
         }).then((response) => {
           if (response.ok) {
             user.name = event.username;
-            return response.json();
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (!data.reason) {
+            that.access_token = data.access_token;
+            window.localStorage.setItem('user', JSON.stringify(user));
+            window.location.href = window.location.href.split('?')[0];
+            window.location.reload();
+          } else if (data.reason == "wrongPassword") {
+            this.loginErr = "Please double check your password.";
+          } else if (data.reason == "missingData") {
+            this.loginErr = "You must provide a username and password.";
+          } else if (data.reason == "notSignedUp") {
+            this.loginErr = "Please make sure you've signed up with Scratch."
           }
         })
         .then((data) => {
@@ -143,7 +158,8 @@ export default {
       oldMessageList: [],
       typingList: [],
       blurred: false,
-      access_token: null
+      access_token: null,
+      loginErr: ""
     };
   },
   mounted() {
