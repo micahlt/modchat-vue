@@ -2,7 +2,6 @@
   <Banned class="banned" v-if="isBanned"/>
   <NavBar :room="currentRoom" class="navbar" @roomSearch="roomChange" v-if="!isBanned"/>
   <MessageRender
-    class="messages"
     @sendMessage="sendMessage"
     :messageList="messageList"
     :oldMessageList="oldMessageList"
@@ -10,7 +9,7 @@
     :typingList="typingList"
     v-if="!isBanned"
   />
-  <UsersOnline class="users" v-if="!isBanned"/>
+  <UsersOnline class="users" v-if="!isBanned" :room="currentRoom" />
   <transition-group name="fade">
     <LoginModal class="modal" @logIn="logIn($event)" @signUp="signUp($event)" v-if="!isLoggedIn" :error="loginErr" />
     <div class="modal-blocker" v-if="!isLoggedIn"></div>
@@ -46,15 +45,12 @@ export default {
   },
   methods: {
     roomChange(name) {
-      let that = this;
-      socket.emit("leaveRoom", this.currentRoom);
-      that.currentRoom = name.substring(1);
-      that.messageList = [];
-      socket.emit("joinRoom", {
-        username: that.user.name,
-        roomname: that.currentRoom,
-        access_token: this.access_token
-      });
+      document.roomChange = true;
+    window.localStorage.setItem('user', JSON.stringify({
+      name: JSON.parse(window.localStorage.getItem('user')).name,
+      room: name.substring(1)
+    }));
+      window.location.reload();
     },
     enableModal() {
       this.modalEnabled = true;
@@ -65,6 +61,7 @@ export default {
         type: "text",
         content: msg,
         username: that.user.name,
+        room: that.currentRoom,
         access_token: this.access_token
       });
     },
@@ -146,13 +143,20 @@ export default {
       window.localStorage.setItem(
         "user",
         `{
-        "name": "Unauthed User"
+        "name": "Unauthed User", "room": "general"
       }`
       );
       window.location.reload();
+    } else {
+      if(!JSON.parse(window.localStorage.getItem('user')).room) {
+window.localStorage.setItem('user', JSON.stringify({
+name: JSON.parse(window.localStorage.getItem('user')).name,
+      room: 'general'
+    }));
+}
     }
     return {
-      currentRoom: "general",
+      currentRoom: JSON.parse(window.localStorage.getItem("user")).room,
       user: JSON.parse(window.localStorage.getItem("user")),
       messageList: [],
       oldMessageList: [],
@@ -177,7 +181,7 @@ export default {
         if (res.status == 200) {
           return res.json();
         } else if (res.status == 403) {
-          window.localStorage.setItem("user", `{"name": "Unauthed User"}`);
+          window.localStorage.setItem("user", `{"name": "Unauthed User", "room": "general"}`);
           window.location.reload();
         }
       }).then((data) => {
@@ -190,6 +194,17 @@ export default {
     window.addEventListener("focus", () => {
       that.blurred = false;
     });
+    window.addEventListener('beforeunload', function () {
+      console.log(document.roomChange)
+      if(document.roomChange != true) {
+      window.localStorage.setItem('user', JSON.stringify({
+      name: JSON.parse(window.localStorage.getItem('user')).name,
+      room: that.currentRoom
+    }));
+      } else {
+          document.roomChange = false;
+      }
+  });
     document.addEventListener("visibilitychange", () => {
         if (document.visibilityState == "visible") document.getElementById("favicon").href = "/favicon.ico";
     });
@@ -198,7 +213,8 @@ export default {
         socket.emit("joinRoom", {
           username: that.user.name,
           roomname: that.currentRoom,
-          access_token: that.access_token
+          access_token: that.access_token,
+          sameTab: false
         });
       });
       socket.on("bannedUser", function(data) {
@@ -257,7 +273,7 @@ export default {
           return res.json();
         } else {
         window.localStorage.setItem(
-        "user", `{"name": "Unauthed User"}`
+        "user", `{"name": "Unauthed User", "room": "general"}`
         );
         window.location.reload();
         }
@@ -316,7 +332,7 @@ export default {
         window.localStorage.setItem(
           "user",
           `{
-          "name": "Unauthed User"
+          "name": "Unauthed User", "room": "general"
         }`);
         }
         return false;
@@ -341,7 +357,7 @@ export default {
   overflow: hidden;
 }
 
-.messages {
+MessageRender {
   grid-row: 2 / 3;
 }
 

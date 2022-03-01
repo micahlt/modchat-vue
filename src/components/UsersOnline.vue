@@ -1,7 +1,7 @@
-(i<template>
+<template>
 <div class="sidebar">
   <div class="sidebar-top">
-    <UserStatus v-for="user in userList" :name="user.name" :pfp="user.scratch_picture" :key="user.name" online="true"></UserStatus>
+    <UserStatus v-for="user in this.userList" :name="user.name" :pfp="user.scratch_picture" :key="user.name" :online="true"></UserStatus>
   </div>
   <div class="sidebar-bottom">
     <p>Statuses from</p>
@@ -28,7 +28,7 @@ import UserStatus from './UserStatus.vue';
 export default {
   name: 'UsersOnline',
   props: {
-    room: String
+    room: String,
   }, 
   components: {
     UserStatus

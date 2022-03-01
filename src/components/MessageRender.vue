@@ -1,9 +1,9 @@
 <template>
 <div id="renderDiv" class="render-messages">
   <transition-group name="list"  @enter="scroll()">
-    <Message class="message-object" v-for="m in messageList" :msg="m" :key="m.id" />
+    <Message v-for="m in messageList" :msg="m" :key="m.id" />
   </transition-group>
-  <Message class="message-object" v-for="m in oldMessageList" :msg="m" :key="m.id" />
+  <Message v-for="m in oldMessageList" :msg="m" :key="m.id" />
 </div>
 <MessageInput @sendMessage="sendMessage" @typing="$emit('typing')" :typingList="typingList" />
 </template>
@@ -71,13 +71,13 @@ export default {
 
 .list-enter-active,
 .list-leave-active {
-  transition: all 0.3s ease;
+  transition: all 0.2s ease-out;
 }
 
 .list-enter-from,
 .list-leave-to {
   opacity: 0;
-  transform: translateY(30px);
+  transform: translateY(40px);
 }
 
 @media only screen and (max-width: 700px) {

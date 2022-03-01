@@ -6,7 +6,7 @@
   </a>
   <div class="gridcol-2">
     <a :href="`https://scratch.mit.edu/users/${msg.username}`" class="username" :title="`Visit ${msg.username} on Scratch`">{{ msg.username }} <span class="badge b-purple" v-if="isYou">YOU</span><span class="badge b-gray" v-if="msg.username == 'Modchat Bot'">BOT</span></a>
-    <div v-if="msg.type == 'text'" class="message-content"><Markdown class="md" :source="filteredContent" :linkify="true" /> <a class="msglink link-reply" href="#"><i data-eva="corner-up-left-outline" :data-eva-fill="textSecondary" :data-eva-height="fontSize" :data-eva-width="fontSize"></i></a><a class="msglink link-report" href="#"><i
+    <div v-if="msg.type == 'text'" class="message-content"><Markdown class="md" :source="filteredContent" :linkify="true" /> <a class="msglink link-reply" href="#" @click="alert"><i data-eva="corner-up-left-outline" :data-eva-fill="textSecondary" :data-eva-height="fontSize" :data-eva-width="fontSize"></i></a><a class="msglink link-report" href="#"><i
           data-eva="flag-outline" :data-eva-fill="textSecondary" :data-eva-height="fontSize" :data-eva-width="fontSize"></i></a>
     </div>
     <img v-else :src="msg.imgsrc" alt="">

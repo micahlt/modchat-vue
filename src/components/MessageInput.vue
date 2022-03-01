@@ -1,5 +1,6 @@
 <template>
-  <div class="wrapper">    <div
+  <div class="wrapper">
+    <div
       contenteditable
       class="input"
       @keydown.enter.prevent="sendMessage($event)"
@@ -18,6 +19,7 @@
 
 <script>
 import * as eva from 'eva-icons';
+
 export default {
   name: 'MessageInput',
   components: {},
@@ -52,7 +54,6 @@ export default {
     },
     manualSend(e) {
       let inputBox = e.target.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.firstChild;
-      console.log(inputBox);
       this.$emit("sendMessage", inputBox.innerText);
       inputBox.innerText = "";
     },

@@ -99,42 +99,34 @@ export default {
   display: flex;
   align-content: left;
 }
-
 .grid-2 {
   display: flex;
   align-items: center;
   justify-content: flex-end;
 }
-
 .nav-options {
   border-right: solid 2px var(--outline);
   padding-right: 30px;
 }
-
 .nav-options a {
   padding: 10px;
 }
-
 .nav-options svg {
   transition: fill 0.1s;
 }
-
 .nav-options svg:hover {
   fill: var(--text-secondary);
   transition: fill 0.1s;
 }
-
 i {
   color: var(--text-primary);
 }
-
 .nav {
   position: relative;
   background: var(--bg-secondary);
   display: grid;
   grid-template-columns: auto auto;
 }
-
 .logo {
   --height: 25px;
   background-image: var(--logo);
@@ -145,12 +137,10 @@ i {
   background-repeat: no-repeat;
   padding-top: 2px;
 }
-
 .room-name {
   display: flex;
   position: relative;
 }
-
 .letter {
   position: relative;
   font-size: 20px;
@@ -165,7 +155,6 @@ i {
   user-select: none;
   line-height: 1em;
 }
-
 .letter::after {
   content: '';
   position: absolute;
@@ -177,7 +166,6 @@ i {
   border-bottom: 9px solid transparent;
   border-left: 9px solid var(--accent);
 }
-
 .full-name {
   color: var(--text-primary);
   font-weight: bold;
@@ -185,19 +173,15 @@ i {
   margin-top: 20px;
   margin-left: 10px;
 }
-
 .search {
   margin-top: 15px;
   margin-left: 40px;
 }
-
 @media only screen and (max-width: 700px) {
-
   .search,
   .logo {
     display: none;
   }
-
   .nav-options {
     border-right: none;
     padding-right: 8px;
