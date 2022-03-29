@@ -240,7 +240,7 @@ name: JSON.parse(window.localStorage.getItem('user')).name,
         that.oldMessageList.unshift(obj);
       } else {
         if (that.blurred) {
-        if(obj.content.includes('@'+that.user.name)) {
+        if(obj.content.toLowerCase().includes('@'+that.user.name.toLowerCase())) {
                 new Notification("Modchat", {
                   body: obj.username + " mentioned you: '" + obj.content + "'",
                   icon: "/img/512x512.png"
