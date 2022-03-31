@@ -1,6 +1,11 @@
 <template :class="theme">
-  <Banned class="banned" v-if="isBanned"/>
-  <NavBar :room="currentRoom" class="navbar" @roomSearch="roomChange" v-if="!isBanned"/>
+  <Banned class="banned" v-if="isBanned" />
+  <NavBar
+    :room="currentRoom"
+    class="navbar"
+    @roomSearch="roomChange"
+    v-if="!isBanned"
+  />
   <MessageRender
     @sendMessage="sendMessage"
     :messageList="messageList"
@@ -11,28 +16,43 @@
   />
   <UsersOnline class="users" v-if="!isBanned" :room="currentRoom" />
   <transition-group name="fade">
-    <LoginModal class="modal" @logIn="logIn($event)" @signUp="signUp($event)" v-if="!isLoggedIn" :error="loginErr" />
-    <div class="modal-blocker" v-if="!isLoggedIn"></div>
+    <LoginModal
+      class="modal"
+      @logIn="logIn($event)"
+      @signUp="signUp($event)"
+      v-if="!isLoggedIn"
+      :error="loginErr"
+    />
+    <div class="modal-blocker" v-if="!isLoggedIn || warningShown"></div>
+    <div class="warning" v-if="warningShown">
+      <p>
+        That message is not appropriate for Modchat.<br />
+        Please be aware of the messages you send in<br />
+        the future or you may be banned. This is<br />
+        violation #{{ violations }}.
+      </p>
+      <a href="#" @click.prevent="warningShown = false">Okay</a>
+    </div>
   </transition-group>
 </template>
 
 <script>
 // These global variables are used to provide API and redirect routes.  You can change these by changing your environment variables.  There's a good tutorial here: https://www.twilio.com/blog/2017/01/how-to-set-environment-variables.html
-window.serverHost = process.env.VUE_APP_SERVER;
-window.clientHost = process.env.VUE_APP_CLIENT;
-import { io } from "socket.io-client";
-import MessageRender from "./components/MessageRender.vue";
-import NavBar from "./components/NavBar.vue";
-import UsersOnline from "./components/UsersOnline.vue";
-import LoginModal from "./components/LoginModal.vue";
+window.serverHost = process.env.VUE_APP_SERVER
+window.clientHost = process.env.VUE_APP_CLIENT
+import { io } from "socket.io-client"
+import MessageRender from "./components/MessageRender.vue"
+import NavBar from "./components/NavBar.vue"
+import UsersOnline from "./components/UsersOnline.vue"
+import LoginModal from "./components/LoginModal.vue"
 import Banned from "./components/Banned.vue"
 const socket = io(window.serverHost, {
   withCredentials: true,
-  autoConnect: false
-});
+  autoConnect: false,
+})
 
 if (Notification.permission == "default") {
-  Notification.requestPermission();
+  Notification.requestPermission()
 }
 export default {
   name: "App",
@@ -41,264 +61,303 @@ export default {
     MessageRender,
     UsersOnline,
     LoginModal,
-    Banned
+    Banned,
   },
   methods: {
     roomChange(name) {
-      document.roomChange = true;
-    window.localStorage.setItem('user', JSON.stringify({
-      name: JSON.parse(window.localStorage.getItem('user')).name,
-      room: name.substring(1)
-    }));
-      window.location.reload();
+      document.roomChange = true
+      window.localStorage.setItem(
+        "user",
+        JSON.stringify({
+          name: JSON.parse(window.localStorage.getItem("user")).name,
+          room: name.substring(1),
+        })
+      )
+      window.location.reload()
     },
     enableModal() {
-      this.modalEnabled = true;
+      this.modalEnabled = true
     },
     sendMessage(msg) {
-      let that = this;
+      let that = this
       socket.emit("chat", {
         type: "text",
         content: msg,
         username: that.user.name,
         room: that.currentRoom,
-        access_token: this.access_token
-      });
+        access_token: this.access_token,
+      })
     },
     typing() {
-      let that = this;
+      let that = this
       socket.emit("userTyping", {
         username: that.user.name,
-        room: that.currentRoom
-      });
+        room: that.currentRoom,
+      })
     },
     logIn(event) {
-      this.loginErr = "";
-      console.log("event:", event);
-      let that = this;
-      let user = JSON.parse(window.localStorage.getItem('user'));
+      this.loginErr = ""
+      console.log("event:", event)
+      let that = this
+      let user = JSON.parse(window.localStorage.getItem("user"))
       fetch(`${this.serverURL}/api/login`, {
         method: "POST",
         body: JSON.stringify({
-          "username": event.username,
-          "password": event.password
+          username: event.username,
+          password: event.password,
         }),
         headers: {
-          "Content-Type": "application/json; charset=utf-8"
+          "Content-Type": "application/json; charset=utf-8",
         },
-        credentials: 'include'
-        }).then((response) => {
+        credentials: "include",
+      })
+        .then((response) => {
           if (response.ok) {
-            user.name = event.username;
+            user.name = event.username
           }
-          return response.json();
+          return response.json()
         })
         .then((data) => {
           if (!data.reason) {
-            that.access_token = data.access_token;
-            window.localStorage.setItem('user', JSON.stringify(user));
-            window.location.href = window.location.href.split('?')[0];
-            window.location.reload();
+            that.access_token = data.access_token
+            window.localStorage.setItem("user", JSON.stringify(user))
+            window.location.href = window.location.href.split("?")[0]
+            window.location.reload()
           } else if (data.reason == "wrongPassword") {
-            this.loginErr = "Please double check your password.";
+            this.loginErr = "Please double check your password."
           } else if (data.reason == "missingData") {
-            this.loginErr = "You must provide a username and password.";
+            this.loginErr = "You must provide a username and password."
           } else if (data.reason == "notSignedUp") {
             this.loginErr = "Please make sure you've signed up with Scratch."
           }
         })
         .then((data) => {
-          that.access_token = data.access_token;
-          window.localStorage.setItem('user', JSON.stringify(user));
-          window.location.href = window.location.href.split('?')[0];
-          window.location.reload();
-        });
+          that.access_token = data.access_token
+          window.localStorage.setItem("user", JSON.stringify(user))
+          window.location.href = window.location.href.split("?")[0]
+          window.location.reload()
+        })
     },
     signUp(event) {
       fetch(`${this.serverURL}/api/updatepassword`, {
         method: "POST",
         body: JSON.stringify({
-          "username": JSON.parse(window.localStorage.getItem('user')).name,
-          "password": event.password
+          username: JSON.parse(window.localStorage.getItem("user")).name,
+          password: event.password,
         }),
         headers: {
-          "Content-Type": "application/json; charset=utf-8"
-        }
-      }).then((response) => {
-        if (response.ok) {
-          return response;
-        }
-      }).then(() => {
-        let user = JSON.parse(window.localStorage.getItem('user'));
-        window.localStorage.setItem('user', JSON.stringify(user));
-        this.logIn({
-          username: user.name,
-          password: event.password
+          "Content-Type": "application/json; charset=utf-8",
+        },
+      })
+        .then((response) => {
+          if (response.ok) {
+            return response
+          }
         })
-      });
-    }
+        .then(() => {
+          let user = JSON.parse(window.localStorage.getItem("user"))
+          window.localStorage.setItem("user", JSON.stringify(user))
+          this.logIn({
+            username: user.name,
+            password: event.password,
+          })
+        })
+    },
+    showWarning() {
+      this.warningShown = true
+      this.violations++
+    },
   },
   data() {
+    let violations
+    if (!window.localStorage.getItem("violations")) {
+      window.localStorage.setItem("violations", 0)
+      violations = 0
+    } else {
+      violations = window.localStorage.getItem("violations")
+    }
     if (!window.localStorage.getItem("user")) {
       window.localStorage.setItem(
         "user",
         `{
         "name": "Unauthed User", "room": "general"
       }`
-      );
-      window.location.reload();
+      )
+      window.location.reload()
     } else {
-      if(!JSON.parse(window.localStorage.getItem('user')).room) {
-window.localStorage.setItem('user', JSON.stringify({
-name: JSON.parse(window.localStorage.getItem('user')).name,
-      room: 'general'
-    }));
-}
+      if (!JSON.parse(window.localStorage.getItem("user")).room) {
+        window.localStorage.setItem(
+          "user",
+          JSON.stringify({
+            name: JSON.parse(window.localStorage.getItem("user")).name,
+            room: "general",
+          })
+        )
+      }
     }
     return {
       currentRoom: JSON.parse(window.localStorage.getItem("user")).room,
       user: JSON.parse(window.localStorage.getItem("user")),
+      violations,
       messageList: [],
       oldMessageList: [],
       typingList: [],
       blurred: false,
       access_token: null,
-      loginErr: ""
-    };
+      loginErr: "",
+      warningShown: false,
+    }
   },
   mounted() {
-    let that = this;
+    let that = this
     fetch(`${process.env.VUE_APP_SERVER}/api/refresh`, {
       method: "POST",
       body: JSON.stringify({
-        "username": that.user.name
+        username: that.user.name,
       }),
       headers: {
-        "Content-Type": "application/json; charset=utf-8"
+        "Content-Type": "application/json; charset=utf-8",
       },
-      credentials: 'include'
-      }).then((res) => {
+      credentials: "include",
+    })
+      .then((res) => {
         if (res.status == 200) {
-          return res.json();
+          return res.json()
         } else if (res.status == 403) {
-          window.localStorage.setItem("user", `{"name": "Unauthed User", "room": "general"}`);
-          window.location.reload();
+          window.localStorage.setItem(
+            "user",
+            `{"name": "Unauthed User", "room": "general"}`
+          )
+          window.location.reload()
         }
-      }).then((data) => {
-        that.access_token = data.access_token;
-        socket.connect();
-      
-    window.addEventListener("blur", () => {
-      that.blurred = true;
-    });
-    window.addEventListener("focus", () => {
-      that.blurred = false;
-    });
-    window.addEventListener('beforeunload', function () {
-      console.log(document.roomChange)
-      if(document.roomChange != true) {
-      window.localStorage.setItem('user', JSON.stringify({
-      name: JSON.parse(window.localStorage.getItem('user')).name,
-      room: that.currentRoom
-    }));
-      } else {
-          document.roomChange = false;
-      }
-  });
-    document.addEventListener("visibilitychange", () => {
-        if (document.visibilityState == "visible") document.getElementById("favicon").href = "/favicon.ico";
-    });
-    socket.on("connect", () => {
-      console.log("Connected to server");
-        socket.emit("joinRoom", {
-          username: that.user.name,
-          roomname: that.currentRoom,
-          access_token: that.access_token,
-          sameTab: false
-        });
-      });
-      socket.on("bannedUser", function(data) {
-          console.log(data);
-                  window.localStorage.setItem(
-        "user",
-        `{
+      })
+      .then((data) => {
+        that.access_token = data.access_token
+        socket.connect()
+
+        window.addEventListener("blur", () => {
+          that.blurred = true
+        })
+        window.addEventListener("focus", () => {
+          that.blurred = false
+        })
+        window.addEventListener("beforeunload", function () {
+          console.log(document.roomChange)
+          if (document.roomChange != true) {
+            window.localStorage.setItem(
+              "user",
+              JSON.stringify({
+                name: JSON.parse(window.localStorage.getItem("user")).name,
+                room: that.currentRoom,
+              })
+            )
+          } else {
+            document.roomChange = false
+          }
+        })
+        document.addEventListener("visibilitychange", () => {
+          if (document.visibilityState == "visible")
+            document.getElementById("favicon").href = "/favicon.ico"
+        })
+        socket.on("connect", () => {
+          console.log("Connected to server")
+          socket.emit("joinRoom", {
+            username: that.user.name,
+            roomname: that.currentRoom,
+            access_token: that.access_token,
+            sameTab: false,
+          })
+        })
+        socket.on("bannedUser", function (data) {
+          console.log(data)
+          window.localStorage.setItem(
+            "user",
+            `{
         "name": "Banned User",
         "reason": "${data.reason}",
         "expiry": "${data.expiry}"
       }`
-        );
-        window.location.reload();
-      });
-      socket.on("message", obj => {
+          )
+          window.location.reload()
+        })
+        socket.on("badMessage", that.showWarning)
+        socket.on("message", (obj) => {
           if (document.hidden) {
-              document.getElementById("favicon").href = "/favicon-unread.ico"
+            document.getElementById("favicon").href = "/favicon-unread.ico"
           }
-      if (obj.profilePicture.includes("?v=")) {
-        obj.profilePicture = obj.profilePicture.slice(0, -3);
-      }
-      if (obj.old) {
-        that.oldMessageList.unshift(obj);
-      } else {
-        if (that.blurred) {
-        if(obj.content.toLowerCase().includes('@'+that.user.name.toLowerCase())) {
+          if (obj.profilePicture.includes("?v=")) {
+            obj.profilePicture = obj.profilePicture.slice(0, -3)
+          }
+          if (obj.old) {
+            that.oldMessageList.unshift(obj)
+          } else {
+            if (that.blurred) {
+              if (
+                obj.content
+                  .toLowerCase()
+                  .includes("@" + that.user.name.toLowerCase())
+              ) {
                 new Notification("Modchat", {
                   body: obj.username + " mentioned you: '" + obj.content + "'",
-                  icon: "/img/512x512.png"
-                });
-                that.messageList.unshift(obj);
-                return false;
-              }/* else {
+                  icon: "/img/512x512.png",
+                })
+                that.messageList.unshift(obj)
+                return false
+              } /* else {
                 new Notification("Modchat", {
                   body: obj.username + ": '" + obj.content + "'",
                   icon: "/img/512x512.png"
                 }); this is commented out because ATM notifications get spammy
               } */
             }
-          that.messageList.unshift(obj);
+            that.messageList.unshift(obj)
           }
-      });
+        })
 
-    socket.on("refresh", (object) => {
-      fetch(`${process.env.VUE_APP_SERVER}/api/refresh`, {
-      method: "POST",
-      body: JSON.stringify({
-        "username": that.user.name
-      }),
-      headers: {
-        "Content-Type": "application/json; charset=utf-8"
-      },
-      credentials: 'include'
-      }).then((res) => {
-        if (res.status == 200) {
-          return res.json();
-        } else {
-        window.localStorage.setItem(
-        "user", `{"name": "Unauthed User", "room": "general"}`
-        );
-        window.location.reload();
-        }
-      }).then((data) => {
-        object.args.access_token = data.access_token;
-        this.access_token = data.access_token;
-        socket.emit(object.name, object.args, data.access_token);
+        socket.on("refresh", (object) => {
+          fetch(`${process.env.VUE_APP_SERVER}/api/refresh`, {
+            method: "POST",
+            body: JSON.stringify({
+              username: that.user.name,
+            }),
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+            },
+            credentials: "include",
+          })
+            .then((res) => {
+              if (res.status == 200) {
+                return res.json()
+              } else {
+                window.localStorage.setItem(
+                  "user",
+                  `{"name": "Unauthed User", "room": "general"}`
+                )
+                window.location.reload()
+              }
+            })
+            .then((data) => {
+              object.args.access_token = data.access_token
+              this.access_token = data.access_token
+              socket.emit(object.name, object.args, data.access_token)
+            })
+        })
+        socket.on("isTyping", (obj) => {
+          if (!that.typingList.includes(obj.username)) {
+            if (that.user.name != obj.username) {
+              that.typingList.push(obj.username)
+            }
+          }
+          window.setTimeout(() => {
+            that.typingList.splice(that.typingList.indexOf(obj.username))
+          }, 600)
+        })
+        socket.on("disconnect", () => {
+          socket.off("isTyping")
+          socket.off("message")
+          socket.off("authenticated")
+        })
       })
-    });
-    socket.on("isTyping", obj => {
-      if (!that.typingList.includes(obj.username)) {
-        if (that.user.name != obj.username) {
-          that.typingList.push(obj.username);
-        }
-      }
-      window.setTimeout(() => {
-        that.typingList.splice(that.typingList.indexOf(obj.username));
-      }, 600);
-    });
-    socket.on("disconnect", () => {
-      socket.off("isTyping");
-      socket.off("message");
-      socket.off("authenticated");
-    });
-  })
   },
   computed: {
     isLoggedIn() {
@@ -307,39 +366,42 @@ name: JSON.parse(window.localStorage.getItem('user')).name,
           JSON.parse(window.localStorage.getItem("user")).name ==
           "Unauthed User"
         ) {
-          return false;
+          return false
         } else {
-          return true;
+          return true
         }
       } else {
-        return false;
+        return false
       }
     },
     clientURL() {
-      let root = window.clientHost;
-      return root;
+      let root = window.clientHost
+      return root
     },
     serverURL() {
-      let root = window.serverHost;
-      return root;
+      let root = window.serverHost
+      return root
     },
     isBanned() {
-      const storage = JSON.parse(window.localStorage.getItem("user"));
-      if(storage.name == "Banned User")  {
-        return true;
+      const storage = JSON.parse(window.localStorage.getItem("user"))
+      if (storage.name == "Banned User") {
+        return true
       } else {
-        if(JSON.parse(window.localStorage.getItem("user")).name == "Banned User") {
-        window.localStorage.setItem(
-          "user",
-          `{
+        if (
+          JSON.parse(window.localStorage.getItem("user")).name == "Banned User"
+        ) {
+          window.localStorage.setItem(
+            "user",
+            `{
           "name": "Unauthed User", "room": "general"
-        }`);
+        }`
+          )
         }
-        return false;
+        return false
       }
-    }
-  }
-};
+    },
+  },
+}
 </script>
 
 <style>
@@ -409,5 +471,35 @@ MessageRender {
 
 .banned {
   grid-column: 1 / 4;
+}
+
+.warning {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--bad);
+  padding: 1em 2em;
+  border-radius: 0.2em;
+  color: white;
+  z-index: 4;
+}
+
+.warning a {
+  text-decoration: none;
+  line-height: 3.5em;
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  padding: 0.5em 1em;
+  border-radius: 0.3em;
+  transition: 0.15s;
+}
+
+.warning a:hover {
+  filter: brightness(0.9);
+}
+
+.warning a:active {
+  filter: brightness(1.05);
 }
 </style>

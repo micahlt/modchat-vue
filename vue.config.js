@@ -9,7 +9,8 @@ module.exports = {
       })
     ]
   },
-    devServer: {
-    disableHostCheck: true
+  devServer: {
+    disableHostCheck: true,
+    port: 3000
   }
 };
