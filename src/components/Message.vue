@@ -1,5 +1,5 @@
 <template>
-  <div class="message">
+  <div class="message" :data-id="msg.id">
     <base target="_blank" />
     <a
       :href="`https://scratch.mit.edu/users/${msg.username}`"
@@ -22,7 +22,11 @@
           >DEV</span
         ></a
       >
-      <div v-if="msg.type == 'text'" class="message-content">
+      <div
+        v-if="msg.type == 'text'"
+        class="message-content"
+        :title="`Message sent at ${new Date(msg.time).toString()}`"
+      >
         <Markdown class="md" :source="filteredContent" :linkify="true" />
         <a class="msglink link-reply" href="#" @click="alert"
           ><i
