@@ -13,6 +13,7 @@
     @typing="typing"
     :typingList="typingList"
     v-if="!isBanned"
+    :room="currentRoom"
   />
   <UsersOnline class="users" v-if="!isBanned" :room="currentRoom" />
   <transition-group name="fade">
@@ -81,11 +82,12 @@ export default {
     sendMessage(msg) {
       let that = this
       socket.emit("chat", {
-        type: "text",
-        content: msg,
+        type: msg.type,
+        content: msg.content,
         username: that.user.name,
         room: that.currentRoom,
         access_token: this.access_token,
+        reply_id: msg.reply_id,
       })
     },
     typing() {
@@ -242,7 +244,9 @@ export default {
             fetch(
               `${process.env.VUE_APP_SERVER}/api/messages/${
                 that.currentRoom
-              }?first=${r.current_message_id - 100}&last=${r.current_message_id}`
+              }?first=${r.current_message_id - 100}&last=${
+                r.current_message_id
+              }`
             )
               .then((response) => response.json())
               .then((msgs) => {

@@ -1,5 +1,16 @@
 <template>
   <div class="wrapper">
+    <div class="reply-preview" v-if="replyId != null && replyData != null">
+      <a
+        title="Remove reply"
+        class="remove-reply"
+        @click.prevent="removeReply"
+        href="#"
+        >&#215;</a
+      >
+      <span class="username">{{ replyData.username }}<br /></span>
+      <span class="message">{{ replyData.message }}</span>
+    </div>
     <div
       contenteditable
       class="input"
@@ -7,10 +18,11 @@
       enterkeyhint="send"
       @keydown="sendTyping"
       @paste="handlePaste($event)"
+      ref="input"
     ></div>
     <div class="typing lightgray">{{ typingMessage }}</div>
     <div class="action-btns">
-      <a title="Send" @click="manualSend($event)"
+      <a title="Send" @click.prevent="manualSend($event)"
         ><i data-eva="paper-plane-outline" :data-eva-fill="accent"></i
       ></a>
     </div>
@@ -18,69 +30,106 @@
 </template>
 
 <script>
-import * as eva from 'eva-icons';
-
+import * as eva from "eva-icons"
+window.serverHost = process.env.VUE_APP_SERVER
+window.clientHost = process.env.VUE_APP_CLIENT
 export default {
-  name: 'MessageInput',
+  name: "MessageInput",
   components: {},
   props: {
-    typingList: Array
+    typingList: Array,
+    replyId: {
+      required: false,
+    },
+    room: String,
   },
-  emits: ["sendMessage",
-         "typing"],
+  emits: ["sendMessage", "typing", "removeReply"],
+  watch: {
+    replyId: {
+      immediate: true,
+      handler() {
+        if (this.replyId != null) this.getReply()
+      },
+    },
+  },
   data() {
-    let accent = getComputedStyle(document.documentElement).getPropertyValue('--accent');
+    let accent = getComputedStyle(document.documentElement).getPropertyValue(
+      "--accent"
+    )
     return {
       accent,
-      typingMessage: ""
+      typingMessage: "",
+      replyData: null,
     }
   },
   methods: {
+    getReply() {
+      fetch(`${window.serverHost}/api/messages/${this.room}/${this.replyId}`)
+        .then((res) => {
+          return res.json()
+        })
+        .then((data) => {
+          this.replyData = data
+        })
+    },
+    removeReply() {
+      this.replyData = null
+      this.$emit("removeReply")
+    },
     handlePaste(e) {
-    let clipboardData, pastedData
-    e.stopPropagation();
-    e.preventDefault();
-
-    clipboardData = e.clipboardData || window.clipboardData;
-    pastedData = clipboardData.getData('Text');
-    window.document.execCommand('insertText', false, pastedData);
-  },
+      let clipboardData, pastedData
+      e.stopPropagation()
+      e.preventDefault()
+      clipboardData = e.clipboardData || window.clipboardData
+      pastedData = clipboardData.getData("Text")
+      window.document.execCommand("insertText", false, pastedData)
+    },
     sendTyping() {
-      this.$emit("typing");
+      this.$emit("typing")
     },
     sendMessage(e) {
-      this.$emit("sendMessage", e.target.innerText);
-      e.target.innerText = "";
+      this.$emit("sendMessage", {
+        content: this.$refs.input.innerText,
+        type: "text",
+        reply_id: this.replyId,
+      })
+      e.target.innerText = ""
+      this.removeReply()
     },
     manualSend(e) {
-      let inputBox = e.target.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.firstChild;
-      this.$emit("sendMessage", inputBox.innerText);
-      inputBox.innerText = "";
+      let inputBox = this.$refs.input
+      this.$emit("sendMessage", {
+        content: inputBox.innerText,
+        type: "text",
+        reply_id: this.replyId,
+      })
+      inputBox.innerText = ""
+      this.removeReply()
     },
     constructTypingMessage() {
       if (this.typingList.length > 0 && this.typingList.length < 2) {
-        let message = "";
+        let message = ""
         this.typingList.forEach((item) => {
-          message = message + item;
-        });
-        return `${message} is typing...`;
+          message = message + item
+        })
+        return `${message} is typing...`
       } else if (this.typingList.length > 1) {
-        let message = "";
+        let message = ""
         this.typingList.forEach((item) => {
-          message = message + item;
-        });
-        return `${message} and ${this.typingList.length - 1} more are typing`;
+          message = message + item
+        })
+        return `${message} and ${this.typingList.length - 1} more are typing`
       } else {
-        return "";
+        return ""
       }
-    }
+    },
   },
   mounted() {
-    eva.replace();
+    eva.replace()
     setInterval(() => {
-        this.typingMessage = this.constructTypingMessage();
-    }, 600);
-  }
+      this.typingMessage = this.constructTypingMessage()
+    }, 600)
+  },
 }
 </script>
 
@@ -214,5 +263,43 @@ a {
   .wrapper {
     grid-column: 1 / 3;
   }
+}
+
+.reply-preview {
+  position: absolute;
+  top: 0;
+  right: 20px;
+  max-width: 30vw;
+  background: var(--bg-secondary);
+  text-align: left;
+  color: var(--text-primary);
+  max-height: 30vw;
+  transform: translateY(-90%);
+  padding: 20px;
+  border: 2px solid var(--accent);
+  border-radius: 0.4rem;
+  font-size: 0.8em;
+}
+
+.reply-preview .username {
+  font-weight: bold;
+}
+
+.reply-preview .message {
+  color: var(--text-secondary);
+}
+
+.remove-reply {
+  position: absolute;
+  right: 10px;
+  top: 5px;
+  font-size: 1.5em;
+  line-height: 1;
+  color: var(--text-secondary);
+  transition: 0.2s color;
+}
+
+.remove-reply:hover {
+  color: var(--text-primary);
 }
 </style>

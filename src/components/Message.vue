@@ -1,4 +1,4 @@
-<template>
+ <template>
   <div class="message" :data-id="msg.id">
     <base target="_blank" />
     <a
@@ -13,41 +13,68 @@
         :href="`https://scratch.mit.edu/users/${msg.username}`"
         class="username"
         :title="`Visit ${msg.username} on Scratch`"
-        >{{ msg.username }} <span class="badge b-purple" v-if="isYou">YOU</span
-        ><span class="badge b-gray" v-if="msg.username == 'Modchat Bot'"
+        >{{ msg.username }}
+        <span class="badge b-purple" v-if="isYou" title="This is your account."
+          >YOU</span
+        ><span
+          class="badge b-gray"
+          v-if="msg.username == 'Modchat Bot'"
+          title="This is a Modchat-verfied robot."
           >BOT</span
-        ><span class="badge b-red" v-if="msg.username == '-Archon-'"
+        ><span
+          class="badge b-red"
+          v-if="msg.username == '-Archon-'"
+          title="This person created Modchat."
           >CREATOR</span
-        ><span class="badge b-green" v-if="devs.includes(msg.username)"
+        ><span
+          class="badge b-green"
+          v-if="devs.includes(msg.username)"
+          title="This person is an active contributor to Modchat's code."
           >DEV</span
         ></a
       >
-      <div
-        v-if="msg.type == 'text'"
-        class="message-content"
-        :data-balloon-pos="widescreen"
-        :aria-label="`Message sent ${new Date(msg.time).toLocaleString(
-          'en-US',
-          {
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true,
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          }
-        )}`"
-      >
-        <Markdown class="md" :source="filteredContent" :linkify="true" />
-        <a class="msglink link-reply" href="#" @click="alert"
+      <div v-if="msg.type == 'text'" class="message-content">
+        <div class="actual-content">
+          <div
+            class="reply-preview"
+            v-if="msg.reply_id != null && replyData != null"
+          >
+            <span class="username"
+              ><strong>{{ replyData.username }}</strong>
+              <br />
+            </span>
+            <span class="message">{{ replyData.message }}</span>
+          </div>
+          <Markdown
+            class="md"
+            :source="filteredContent"
+            :linkify="true"
+            :data-balloon-pos="widescreen"
+            :aria-label="`Message sent ${new Date(msg.time).toLocaleString(
+              'en-US',
+              {
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true,
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              }
+            )}`"
+          />
+        </div>
+        <a
+          class="msglink link-reply"
+          href="#"
+          @click.prevent="$emit('reply', msg.id)"
           ><i
             data-eva="corner-up-left-outline"
             :data-eva-fill="textSecondary"
             :data-eva-height="fontSize"
             :data-eva-width="fontSize"
           ></i></a
-        ><a class="msglink link-report" href="#"
+        ><a class="msglink link-report" @click.prevent href="#"
           ><i
             data-eva="flag-outline"
             :data-eva-fill="textSecondary"
@@ -62,18 +89,43 @@
 </template>
 
 <script>
+window.serverHost = process.env.VUE_APP_SERVER
+window.clientHost = process.env.VUE_APP_CLIENT
 import * as eva from "eva-icons"
 import Markdown from "vue3-markdown-it"
 export default {
   name: "Message",
   props: {
     msg: Object,
+    room: String,
   },
+  emits: ["reply"],
   components: {
     Markdown,
   },
   mounted() {
     eva.replace()
+    if (this.msg.reply_id) {
+      this.getReply()
+    } else {
+      console.log("No replies")
+    }
+  },
+  methods: {
+    alert() {
+      alert("HEy")
+    },
+    getReply() {
+      fetch(
+        `${window.serverHost}/api/messages/${this.room}/${this.msg.reply_id}`
+      )
+        .then((res) => {
+          return res.json()
+        })
+        .then((data) => {
+          this.replyData = data
+        })
+    },
   },
   data() {
     let fontSize =
@@ -85,6 +137,7 @@ export default {
       textSecondary,
       fontSize,
       devs: ["-Archon-", "b1048546", "AmazingMech2418"],
+      replyData: null,
     }
   },
   computed: {
@@ -170,8 +223,18 @@ export default {
   --balloon-text-color: var(--text-primary);
 }
 .message-content:hover .msglink {
+  transform: translateY(-0.25em);
   opacity: 1;
   transition: 0.2s;
+}
+
+.msglink:hover svg {
+  fill: var(--text-primary);
+}
+
+.msglink svg {
+  fill: var(--light-accent);
+  transition: 0.2s fill;
 }
 
 .md >>> a {
@@ -190,6 +253,7 @@ export default {
   opacity: 0;
   transition: 0.2s;
   transform: translateY(2px);
+  margin-top: auto;
 }
 .msglink:first-of-type {
   margin-left: 5px;
@@ -229,5 +293,24 @@ export default {
 .b-green {
   color: black;
   background: var(--good);
+}
+
+.reply-preview {
+  background: var(--bg-secondary);
+  text-align: left;
+  color: var(--text-primary);
+  padding: 5px 10px;
+  border-left: 2px solid var(--light-accent);
+  border-radius: 0.4rem;
+  font-size: 0.9em;
+  margin: 0.7em 0;
+}
+
+.reply-preview .username {
+  font-weight: initial;
+}
+
+.reply-preview .message {
+  color: var(--text-secondary);
 }
 </style>

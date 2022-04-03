@@ -1,40 +1,68 @@
 <template>
-<div id="renderDiv" class="render-messages">
-  <transition-group name="list"  @enter="scroll()">
-    <Message v-for="m in messageList" :msg="m" :key="m.id" />
-  </transition-group>
-  <Message v-for="m in oldMessageList" :msg="m" :key="m.id" />
-</div>
-<MessageInput @sendMessage="sendMessage" @typing="$emit('typing')" :typingList="typingList" />
+  <div id="renderDiv" class="render-messages">
+    <transition-group name="list" @enter="scroll()">
+      <Message
+        v-for="m in messageList"
+        :msg="m"
+        :key="m.id"
+        @reply="handleReply($event)"
+        :room="room"
+      />
+    </transition-group>
+    <Message
+      v-for="m in oldMessageList"
+      :msg="m"
+      :key="m.id"
+      @reply="handleReply($event)"
+      :room="room"
+    />
+  </div>
+  <MessageInput
+    @sendMessage="sendMessage"
+    @typing="$emit('typing')"
+    @removeReply="replyId = null"
+    :typingList="typingList"
+    :replyId="replyId"
+    :room="room"
+  />
 </template>
 
 <script>
-import MessageInput from './MessageInput.vue';
-import Message from './Message.vue';
+import MessageInput from "./MessageInput.vue"
+import Message from "./Message.vue"
 export default {
-  name: 'MessageRender',
+  name: "MessageRender",
   emits: ["sendMessage", "typing"],
   components: {
     MessageInput,
-    Message
+    Message,
   },
   props: {
     oldMessageList: Array,
     messageList: Array,
-    typingList: Array
+    typingList: Array,
+    room: String,
+  },
+  data() {
+    return {
+      replyId: null,
+    }
   },
   methods: {
     sendMessage(msg) {
-      this.$emit("sendMessage", msg);
+      this.$emit("sendMessage", msg)
     },
     scroll() {
-      let messageDiv = document.getElementById('renderDiv');
+      let messageDiv = document.getElementById("renderDiv")
       if (messageDiv.scrollTop < -99) {
-        messageDiv.scroll(0, 100);
-        messageDiv.scrollIntoView(false);
+        messageDiv.scroll(0, 100)
+        messageDiv.scrollIntoView(false)
       }
-    }
-  }
+    },
+    handleReply(e) {
+      this.replyId = e
+    },
+  },
 }
 </script>
 
@@ -42,7 +70,7 @@ export default {
 <style scoped>
 .render-messages {
   height: calc(100vh - 170px);
-  overflow-y: scroll;
+  over/low-y: scroll;
   overflow-x: hidden;
   padding: 10px;
   display: flex;
