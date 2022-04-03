@@ -96,7 +96,7 @@ export default {
       e.target.innerText = ""
       this.removeReply()
     },
-    manualSend(e) {
+    manualSend() {
       let inputBox = this.$refs.input
       this.$emit("sendMessage", {
         content: inputBox.innerText,
