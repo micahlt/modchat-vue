@@ -10,6 +10,7 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "balloon-css": "^1.2.0",
     "caniuse-lite": "^1.0.30001312",
     "core-js": "^3.21.1",
     "css-loader": "^4.3.0",

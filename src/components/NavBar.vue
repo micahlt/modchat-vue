@@ -48,10 +48,6 @@ export default {
       this.$emit("roomSearch", name);
     },
     logOut() {
-      window.localStorage.setItem('user', `{
-        "name": "Unauthed User",
-        "token": 0
-      }`);
       fetch(`${process.env.VUE_APP_SERVER}/api/logout`, {
           method: "POST",
           body: JSON.stringify({
@@ -62,6 +58,10 @@ export default {
           },
           credentials: 'include'
     }).then(() => {
+      window.localStorage.setItem('user', `{
+        "name": "Unauthed User",
+        "token": 0
+      }`);
       window.location.reload();
     })
      },

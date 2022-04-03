@@ -25,7 +25,19 @@
       <div
         v-if="msg.type == 'text'"
         class="message-content"
-        :title="`Message sent at ${new Date(msg.time).toString()}`"
+        :data-balloon-pos="widescreen"
+        :aria-label="`Message sent ${new Date(msg.time).toLocaleString(
+          'en-US',
+          {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true,
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          }
+        )}`"
       >
         <Markdown class="md" :source="filteredContent" :linkify="true" />
         <a class="msglink link-reply" href="#" @click="alert"
@@ -76,6 +88,13 @@ export default {
     }
   },
   computed: {
+    widescreen() {
+      if (window.innerWidth > 700) {
+        return "right"
+      } else {
+        return "up"
+      }
+    },
     isYou() {
       if (
         JSON.parse(window.localStorage.getItem("user")).name ==
@@ -146,6 +165,9 @@ export default {
   word-wrap: break-word;
   font-size: 0.9em;
   display: flex;
+  width: max-content;
+  --balloon-color: var(--bg-secondary);
+  --balloon-text-color: var(--text-primary);
 }
 .message-content:hover .msglink {
   opacity: 1;

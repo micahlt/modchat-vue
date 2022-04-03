@@ -233,7 +233,30 @@ export default {
       })
       .then((data) => {
         that.access_token = data.access_token
-        socket.connect()
+        fetch(`${process.env.VUE_APP_SERVER}/api/rooms/${that.currentRoom}`)
+          .then((response) => response.json())
+          .then((r) => {
+            if (r.current_message_id < 100) {
+              r.current_message_id = 101
+            }
+            fetch(
+              `${process.env.VUE_APP_SERVER}/api/messages/${
+                that.currentRoom
+              }?first=${r.current_message_id - 100}&last=${r.current_message_id}`
+            )
+              .then((response) => response.json())
+              .then((msgs) => {
+                msgs.forEach((msg) => {
+                  msg.content = msg.message
+                  msg.type = "text"
+                  msg.profilePicture = msg.profile_picture
+                  delete msg.message
+                  delete msg.profile_picture
+                  that.messageList.unshift(msg)
+                })
+                socket.connect()
+              })
+          })
 
         window.addEventListener("blur", () => {
           that.blurred = true
@@ -310,6 +333,7 @@ export default {
                 }); this is commented out because ATM notifications get spammy
               } */
             }
+            console.log(obj)
             that.messageList.unshift(obj)
           }
         })
@@ -326,6 +350,7 @@ export default {
             credentials: "include",
           })
             .then((res) => {
+              console.log(res.status)
               if (res.status == 200) {
                 return res.json()
               } else {
