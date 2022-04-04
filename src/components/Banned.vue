@@ -5,9 +5,9 @@
         <i data-eva="slash-outline" :data-eva-fill="iconColor" data-eva-height="64" data-eva-width="64"></i>
       </div>
       <h1>Banned</h1>
-      <p><br/>You have been banned from Modchat due to breaking the <a href="#">terms of use</a> or <a href="#">Community Guidelines</a>. This account will remain banned until {{ expiry }}.  The moderator provided this reason:<br/></p>
+      <p><br/>You have been banned from Modchat due to breaking the <a href="#">terms of use</a> or <a href="#">Community Guidelines</a>. This account will remain banned until {{ expiry }}.  The moderator provided this reason for your ban:<br/></p>
       <div class="banned-reason"><em>{{ reason }}</em></div>
-      <p>If you believe you have been banned in error, please <a href="https://scratch.mit.edu/users/-Archon-">-Archon-</a> and we will look into your case.</p>
+      <p>If you believe you have been banned in error, please contact <a href="https://scratch.mit.edu/users/-Archon-">-Archon-</a> and we will look into your case.</p>
     </div>  
   </div>
 </template>

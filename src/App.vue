@@ -21,10 +21,13 @@
       class="modal"
       @logIn="logIn($event)"
       @signUp="signUp($event)"
-      v-if="!isLoggedIn"
+      v-if="!isLoggedIn && !isBanned"
       :error="loginErr"
     />
-    <div class="modal-blocker" v-if="!isLoggedIn || warningShown"></div>
+    <div
+      class="modal-blocker"
+      v-if="(!isLoggedIn && !isBanned) || warningShown"
+    ></div>
     <div class="warning" v-if="warningShown">
       <p>
         That message is not appropriate for Modchat.<br />
@@ -208,192 +211,230 @@ export default {
       access_token: null,
       loginErr: "",
       warningShown: false,
+      isBanned: false,
     }
   },
   mounted() {
     let that = this
-    fetch(`${process.env.VUE_APP_SERVER}/api/refresh`, {
-      method: "POST",
-      body: JSON.stringify({
-        username: that.user.name,
-      }),
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      credentials: "include",
-    })
-      .then((res) => {
-        if (res.status == 200) {
-          return res.json()
-        } else if (res.status == 403) {
-          window.localStorage.setItem(
-            "user",
-            `{"name": "Unauthed User", "room": "general"}`
-          )
-          window.location.reload()
-        }
-      })
-      .then((data) => {
-        that.access_token = data.access_token
-        fetch(`${process.env.VUE_APP_SERVER}/api/rooms/${that.currentRoom}`)
-          .then((response) => response.json())
-          .then((r) => {
-            if (r.current_message_id < 100) {
-              r.current_message_id = 101
+    const storage = JSON.parse(window.localStorage.getItem("user"))
+    if (storage.secondName == "Banned User") {
+      fetch(
+        `${process.env.VUE_APP_SERVER}/api/session/isBanned/${storage.name}`
+      )
+        .then((response) => response.json())
+        .then((r) => {
+          if (r.banned) {
+            if (Date.now() > r.expiry) {
+              window.localStorage.setItem(
+                "user",
+                `{"name": "Unauthed User", "room": "general"}`
+              )
+              window.location.reload()
             }
-            fetch(
-              `${process.env.VUE_APP_SERVER}/api/messages/${
-                that.currentRoom
-              }?first=${r.current_message_id - 100}&last=${
-                r.current_message_id
-              }`
-            )
-              .then((response) => response.json())
-              .then((msgs) => {
-                msgs.forEach((msg) => {
-                  msg.content = msg.message
-                  msg.type = "text"
-                  msg.profilePicture = msg.profile_picture
-                  delete msg.message
-                  delete msg.profile_picture
-                  that.messageList.unshift(msg)
-                })
-                socket.connect()
-              })
-          })
-
-        window.addEventListener("blur", () => {
-          that.blurred = true
-        })
-        window.addEventListener("focus", () => {
-          that.blurred = false
-        })
-        window.addEventListener("beforeunload", function () {
-          console.log(document.roomChange)
-          if (document.roomChange != true) {
+            this.isBanned = true
+          } else {
             window.localStorage.setItem(
               "user",
-              JSON.stringify({
-                name: JSON.parse(window.localStorage.getItem("user")).name,
-                room: that.currentRoom,
-              })
+              `{"name": "Unauthed User", "room": "general"}`
             )
-          } else {
-            document.roomChange = false
+            window.location.reload()
           }
         })
-        document.addEventListener("visibilitychange", () => {
-          if (document.visibilityState == "visible")
-            document.getElementById("favicon").href = "/favicon.ico"
-        })
-        socket.on("connect", () => {
-          console.log("Connected to server")
-          socket.emit("joinRoom", {
-            username: that.user.name,
-            roomname: that.currentRoom,
-            access_token: that.access_token,
-            sameTab: false,
-          })
-        })
-        socket.on("bannedUser", function (data) {
-          console.log(data)
-          window.localStorage.setItem(
-            "user",
-            `{
-        "name": "Banned User",
-        "reason": "${data.reason}",
-        "expiry": "${data.expiry}"
-      }`
-          )
-          window.location.reload()
-        })
-        socket.on("badMessage", that.showWarning)
-        socket.on("message", (obj) => {
-          if (document.hidden) {
-            document.getElementById("favicon").href = "/favicon-unread.ico"
+    }
+    if (!this.isBanned)
+      fetch(`${process.env.VUE_APP_SERVER}/api/refresh`, {
+        method: "POST",
+        body: JSON.stringify({
+          username: that.user.name,
+        }),
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        credentials: "include",
+      })
+        .then((res) => {
+          if (res.status == 200) {
+            return res.json()
+          } else if (res.status == 403 && !this.isBanned) {
+            window.localStorage.setItem(
+              "user",
+              `{"name": "Unauthed User", "room": "general"}`
+            )
+            window.location.reload()
           }
-          if (obj.profilePicture.includes("?v=")) {
-            obj.profilePicture = obj.profilePicture.slice(0, -3)
-          }
-          if (obj.old) {
-            that.oldMessageList.unshift(obj)
-          } else {
-            if (that.blurred) {
-              if (
-                obj.content
-                  .toLowerCase()
-                  .includes("@" + that.user.name.toLowerCase())
-              ) {
-                new Notification("Modchat", {
-                  body: obj.username + " mentioned you: '" + obj.content + "'",
-                  icon: "/img/512x512.png",
+        })
+        .then((data) => {
+          that.access_token = data.access_token
+          fetch(`${process.env.VUE_APP_SERVER}/api/rooms/${that.currentRoom}`)
+            .then((response) => response.json())
+            .then((r) => {
+              if (r.current_message_id < 100) {
+                r.current_message_id = 101
+              }
+              fetch(
+                `${process.env.VUE_APP_SERVER}/api/messages/${
+                  that.currentRoom
+                }?first=${r.current_message_id - 100}&last=${
+                  r.current_message_id
+                }`
+              )
+                .then((response) => response.json())
+                .then((msgs) => {
+                  msgs.forEach((msg) => {
+                    msg.content = msg.message
+                    msg.type = "text"
+                    msg.profilePicture = msg.profile_picture
+                    delete msg.message
+                    delete msg.profile_picture
+                    that.messageList.unshift(msg)
+                  })
+                  socket.connect()
                 })
-                that.messageList.unshift(obj)
-                return false
-              } /* else {
+            })
+
+          window.addEventListener("blur", () => {
+            that.blurred = true
+          })
+          window.addEventListener("focus", () => {
+            that.blurred = false
+          })
+          window.addEventListener("beforeunload", function () {
+            console.log(document.roomChange)
+            if (
+              document.roomChange != true &&
+              JSON.parse(window.localStorage.getItem("user")).secondName !==
+                "Banned User"
+            ) {
+              window.localStorage.setItem(
+                "user",
+                JSON.stringify({
+                  name: JSON.parse(window.localStorage.getItem("user")).name,
+                  room: that.currentRoom,
+                })
+              )
+            } else {
+              document.roomChange = false
+            }
+          })
+          document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState == "visible")
+              document.getElementById("favicon").href = "/favicon.ico"
+          })
+          socket.on("connect", () => {
+            console.log("Connected to server")
+            socket.emit("joinRoom", {
+              username: that.user.name,
+              roomname: that.currentRoom,
+              access_token: that.access_token,
+              sameTab: false,
+            })
+          })
+          socket.on("bannedUser", function (data) {
+            const user = JSON.parse(window.localStorage.getItem("user"))
+            if (user.secondName != "Banned User") {
+              window.localStorage.setItem(
+                "user",
+                JSON.stringify({
+                  name: JSON.parse(window.localStorage.getItem("user")).name,
+                  secondName: "Banned User",
+                  reason: data.reason,
+                  expiry: data.expiry,
+                  room: "general",
+                })
+              )
+              window.location.reload()
+            }
+          })
+          socket.on("badMessage", that.showWarning)
+          socket.on("message", (obj) => {
+            if (document.hidden) {
+              document.getElementById("favicon").href = "/favicon-unread.ico"
+            }
+            if (obj.profilePicture.includes("?v=")) {
+              obj.profilePicture = obj.profilePicture.slice(0, -3)
+            }
+            if (obj.old) {
+              that.oldMessageList.unshift(obj)
+            } else {
+              if (that.blurred) {
+                if (
+                  obj.content
+                    .toLowerCase()
+                    .includes("@" + that.user.name.toLowerCase())
+                ) {
+                  new Notification("Modchat", {
+                    body:
+                      obj.username + " mentioned you: '" + obj.content + "'",
+                    icon: "/img/512x512.png",
+                  })
+                  that.messageList.unshift(obj)
+                  return false
+                } /* else {
                 new Notification("Modchat", {
                   body: obj.username + ": '" + obj.content + "'",
                   icon: "/img/512x512.png"
                 }); this is commented out because ATM notifications get spammy
               } */
-            }
-            console.log(obj)
-            that.messageList.unshift(obj)
-          }
-        })
-
-        socket.on("refresh", (object) => {
-          fetch(`${process.env.VUE_APP_SERVER}/api/refresh`, {
-            method: "POST",
-            body: JSON.stringify({
-              username: that.user.name,
-            }),
-            headers: {
-              "Content-Type": "application/json; charset=utf-8",
-            },
-            credentials: "include",
-          })
-            .then((res) => {
-              console.log(res.status)
-              if (res.status == 200) {
-                return res.json()
-              } else {
-                window.localStorage.setItem(
-                  "user",
-                  `{"name": "Unauthed User", "room": "general"}`
-                )
-                window.location.reload()
               }
-            })
-            .then((data) => {
-              object.args.access_token = data.access_token
-              this.access_token = data.access_token
-              socket.emit(object.name, object.args, data.access_token)
-            })
-        })
-        socket.on("isTyping", (obj) => {
-          if (!that.typingList.includes(obj.username)) {
-            if (that.user.name != obj.username) {
-              that.typingList.push(obj.username)
+              console.log(obj)
+              that.messageList.unshift(obj)
             }
-          }
-          window.setTimeout(() => {
-            that.typingList.splice(that.typingList.indexOf(obj.username))
-          }, 600)
+          })
+
+          socket.on("refresh", (object) => {
+            fetch(`${process.env.VUE_APP_SERVER}/api/refresh`, {
+              method: "POST",
+              body: JSON.stringify({
+                username: that.user.name,
+              }),
+              headers: {
+                "Content-Type": "application/json; charset=utf-8",
+              },
+              credentials: "include",
+            })
+              .then((res) => {
+                console.log(res.status)
+                if (res.status == 200) {
+                  return res.json()
+                } else if (!this.isBanned) {
+                  window.localStorage.setItem(
+                    "user",
+                    `{"name": "Unauthed User", "room": "general"}`
+                  )
+                  window.location.reload()
+                }
+              })
+              .then((data) => {
+                object.args.access_token = data.access_token
+                this.access_token = data.access_token
+                socket.emit(object.name, object.args, data.access_token)
+              })
+          })
+          socket.on("isTyping", (obj) => {
+            if (!that.typingList.includes(obj.username)) {
+              if (that.user.name != obj.username) {
+                that.typingList.push(obj.username)
+              }
+            }
+            window.setTimeout(() => {
+              that.typingList.splice(that.typingList.indexOf(obj.username))
+            }, 600)
+          })
+          socket.on("disconnect", () => {
+            socket.off("isTyping")
+            socket.off("message")
+            socket.off("authenticated")
+          })
         })
-        socket.on("disconnect", () => {
-          socket.off("isTyping")
-          socket.off("message")
-          socket.off("authenticated")
-        })
-      })
   },
   computed: {
     isLoggedIn() {
       if (window.localStorage.getItem("user")) {
         if (
           JSON.parse(window.localStorage.getItem("user")).name ==
-          "Unauthed User"
+            "Unauthed User" ||
+          JSON.parse(window.localStorage.getItem("user")).secondName ==
+            "Banned User"
         ) {
           return false
         } else {
@@ -410,24 +451,6 @@ export default {
     serverURL() {
       let root = window.serverHost
       return root
-    },
-    isBanned() {
-      const storage = JSON.parse(window.localStorage.getItem("user"))
-      if (storage.name == "Banned User") {
-        return true
-      } else {
-        if (
-          JSON.parse(window.localStorage.getItem("user")).name == "Banned User"
-        ) {
-          window.localStorage.setItem(
-            "user",
-            `{
-          "name": "Unauthed User", "room": "general"
-        }`
-          )
-        }
-        return false
-      }
     },
   },
 }

@@ -1,36 +1,43 @@
 <template>
-<div>
-  <input :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" :type="type" :placeholder="placeholder" :disabled="disabled" @keyup.enter="$emit('enterKey')">
-  <span></span>
-</div>
+  <div>
+    <input
+      :value="modelValue"
+      @input="$emit('update:modelValue', $event.target.value)"
+      :type="type"
+      :placeholder="placeholder"
+      :disabled="disabled"
+      @keyup.enter="$emit('enterKey')"
+    />
+    <span></span>
+  </div>
 </template>
 
 <script>
 export default {
-  name: 'TextBox',
+  name: "TextBox",
   model: {
-    props: 'title',
-    event: 'change'
+    props: "title",
+    event: "change",
   },
-  emits: ['enterKey'],
+  emits: ["enterKey"],
   props: {
     placeholder: {
       type: String,
-      default: ''
+      default: "",
     },
     disabled: {
       type: Boolean,
-      default: false
+      default: false,
     },
     modelValue: {
       type: String,
-      default: ''
+      default: "",
     },
     type: {
       type: String,
-      default: 'text'
-    }
-  }
+      default: "text",
+    },
+  },
 }
 </script>
 
@@ -41,13 +48,13 @@ div {
 
 input {
   width: max-width;
-  color: white;
+  color: var(--text-primary);
   font-size: inherit;
   font-family: inherit;
   background-color: transparent;
   border: 1px solid transparent;
   border-bottom-color: var(--text-secondary);
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   padding: 0.3em;
 }
 
@@ -61,7 +68,7 @@ input:disabled {
 
 input::placeholder {
   color: var(--text-secondary);
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 span {
@@ -77,7 +84,7 @@ span {
   transition: all 0.3s ease;
 }
 
-input:focus~span {
+input:focus ~ span {
   transform: translate(-50%, 0) scaleX(1);
   opacity: 1;
 }
