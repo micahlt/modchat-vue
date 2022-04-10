@@ -268,6 +268,10 @@ export default {
           fetch(`${process.env.VUE_APP_SERVER}/api/rooms/${that.currentRoom}`)
             .then((response) => response.json())
             .then((r) => {
+              if(r.current_message_id == 0) {
+                socket.connect()
+                return
+              }
               if (r.current_message_id < 100) {
                 r.current_message_id = 101
               }

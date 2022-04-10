@@ -1,95 +1,107 @@
 <template>
-<div class="nav">
-  <div class="grid-1">
-    <div class="room-name">
-      <div class="letter">
-        {{ room.toUpperCase().charAt(0) }}
+  <div class="nav">
+    <div class="grid-1">
+      <div class="room-name">
+        <div class="letter">
+          {{ room.toUpperCase().charAt(0) }}
+        </div>
+        <span class="full-name">
+          {{ room.toLowerCase() }}
+        </span>
       </div>
-      <span class="full-name">
-        {{ room.toLowerCase() }}
-      </span>
+      <NavSearch class="search" @roomSearch="roomSearch" @logOut="logOut" />
     </div>
-    <NavSearch class="search" @roomSearch="roomSearch" @logOut="logOut" />
-  </div>
-  <div class="grid-2">
-    <div class="nav-options">
-      <a href="#" target="_self" title="Notifications"><i data-eva="bell-outline" data-eva-fill="#ddd"></i></a>
-      <a href="#" target="_self" title="Change Theme" @click="changeTheme"><i data-eva="moon-outline" :data-eva-fill="textColor"></i></a>
-      <a href="#" target="_self" title="Log Out" @click="logOut"><i data-eva="log-out" :data-eva-fill="textColor"></i></a>
+    <div class="grid-2">
+      <div class="nav-options">
+        <a href="#" target="_self" title="Notifications"
+          ><i data-eva="bell-outline" data-eva-fill="#ddd"></i
+        ></a>
+        <a href="#" target="_self" title="Change Theme" @click="changeTheme"
+          ><i data-eva="moon-outline" :data-eva-fill="textColor"></i
+        ></a>
+        <a href="#" target="_self" title="Log Out" @click="logOut"
+          ><i data-eva="log-out" :data-eva-fill="textColor"></i
+        ></a>
+      </div>
+      <div class="logo"></div>
     </div>
-    <div class="logo"></div>
   </div>
-</div>
 </template>
 
 <script>
-import NavSearch from './NavSearch.vue';
-import * as eva from 'eva-icons';
+import NavSearch from "./NavSearch.vue"
+import * as eva from "eva-icons"
 export default {
-  name: 'NavBar',
+  name: "NavBar",
   emits: ["roomSearch"],
   components: {
-    NavSearch
+    NavSearch,
   },
   props: {
-    room: String
+    room: String,
   },
   mounted() {
-    eva.replace();
+    eva.replace()
   },
   data() {
-    let textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-primary');
+    let textColor = getComputedStyle(document.documentElement).getPropertyValue(
+      "--text-primary"
+    )
     return {
-      textColor
+      textColor,
     }
   },
   methods: {
     roomSearch(name) {
-      this.$emit("roomSearch", name);
+      this.$emit("roomSearch", name)
     },
     logOut() {
       fetch(`${process.env.VUE_APP_SERVER}/api/logout`, {
-          method: "POST",
-          body: JSON.stringify({
-            "username": JSON.parse(localStorage.getItem('user')).name
-          }),
-          headers: {
-            "Content-Type": "application/json; charset=utf-8"
-          },
-          credentials: 'include'
-    }).then(() => {
-      window.localStorage.setItem('user', `{
+        method: "POST",
+        body: JSON.stringify({
+          username: JSON.parse(localStorage.getItem("user")).name,
+        }),
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        credentials: "include",
+      }).then(() => {
+        window.localStorage.setItem(
+          "user",
+          `{
         "name": "Unauthed User",
         "token": 0
-      }`);
-      window.location.reload();
-    })
-     },
+      }`
+        )
+        window.location.reload()
+      })
+    },
     changeTheme() {
-      switch (window.localStorage.getItem('theme')) {
-        case ('default'): {
-          if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            window.localStorage.setItem('theme', 'light');
+      switch (window.localStorage.getItem("theme")) {
+        case "default": {
+          if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+            window.localStorage.setItem("theme", "light")
+            document.documentElement.classList.replace("dark", "light")
           } else {
-            window.localStorage.setItem('theme', 'dark');
+            window.localStorage.setItem("theme", "dark")
+            document.documentElement.classList.replace("light", "dark")
           }
-          window.location.reload();
-          break;
+          break
         }
-        case ('light'): {
-          window.localStorage.setItem('theme', 'dark');
-          window.location.reload();
-          break;
+        case "light": {
+          window.localStorage.setItem("theme", "dark")
+          document.documentElement.classList.replace("light", "dark")
+          break
         }
-        case ('dark'): {
-          window.localStorage.setItem('theme', 'light');
-          window.location.reload();
-          break;
+        case "dark": {
+          window.localStorage.setItem("theme", "light")
+          document.documentElement.classList.replace("dark", "light")
+          break
         }
       }
-      eva.replace();
-    }
-  }
+      eva.replace()
+    },
+  },
 }
 </script>
 
@@ -132,7 +144,7 @@ i {
   background-image: var(--logo);
   background-size: contain;
   height: var(--height);
-  width: calc(var(--height)*7.1);
+  width: calc(var(--height) * 7.1);
   margin: 0 1.2em;
   background-repeat: no-repeat;
   padding-top: 2px;
@@ -156,7 +168,7 @@ i {
   line-height: 1em;
 }
 .letter::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 0;
   height: 0;
@@ -186,5 +198,9 @@ i {
     border-right: none;
     padding-right: 8px;
   }
+}
+
+.eva {
+  fill: var(--text-primary);
 }
 </style>
