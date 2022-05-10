@@ -50,7 +50,7 @@ export default {
   data() {
     return {
       replyId: null,
-      reportId: null
+      reportId: null,
     }
   },
   methods: {
@@ -71,12 +71,11 @@ export default {
       this.reportId = e
     },
     reportMessage() {
-      if(this.reportId) {
-      this.$emit('reportMessage', this.reportId)
-      this.reportId = null
-      reportId = null
+      if (this.reportId) {
+        this.$emit("reportMessage", this.reportId)
+        this.reportId = null
       }
-    }
+    },
   },
 }
 </script>
