@@ -1,6 +1,9 @@
 <template>
   <div class="wrapper">
-    <div class="reply-preview" v-if="replyId != null && replyData != null && reportId == null">
+    <div
+      class="reply-preview"
+      v-if="replyId != null && replyData != null && reportId == null"
+    >
       <a
         title="Remove reply"
         class="remove-reply"
@@ -16,14 +19,20 @@
         title="Cancel report"
         class="remove-reply"
         @click.prevent="cancelReport"
-        href="#">&#215;</a>
-              <a
+        href="#"
+        >&#215;</a
+      >
+      <a
         title="Report the message"
         class="report-message"
         @click.prevent="reportMessage"
-        href="#">GO
-        </a>
-              <span class="username">Would you like to report {{ replyData.username }}? This is their message:<br /></span>
+        href="#"
+        >GO
+      </a>
+      <span class="username"
+        >Would you like to report {{ replyData.username }}? This is their
+        message:<br
+      /></span>
       <span class="message">{{ replyData.message }}</span>
     </div>
     <div
@@ -55,13 +64,21 @@ export default {
     typingList: Array,
     replyId: {
       required: false,
+      default: null,
     },
     reportId: {
       required: false,
+      default: null,
     },
     room: String,
   },
-  emits: ["sendMessage", "typing", "removeReply", "cancelReport", "reportMessage"],
+  emits: [
+    "sendMessage",
+    "typing",
+    "removeReply",
+    "cancelReport",
+    "reportMessage",
+  ],
   watch: {
     replyId: {
       immediate: true,
@@ -72,9 +89,9 @@ export default {
     reportId: {
       immediate: true,
       handler() {
-        if(this.reportId != null) this.getReply(this.reportId)
-      }
-    }
+        if (this.reportId != null) this.getReply(this.reportId)
+      },
+    },
   },
   data() {
     let accent = getComputedStyle(document.documentElement).getPropertyValue(
@@ -336,7 +353,7 @@ a {
 .reply-preview .message {
   color: var(--text-secondary);
   width: 500px;
-  word-wrap: break-word
+  word-wrap: break-word;
 }
 
 .report-preview .username {
@@ -346,7 +363,7 @@ a {
 .report-preview .message {
   color: var(--text-secondary);
   width: 500px;
-  word-wrap: break-word
+  word-wrap: break-word;
 }
 
 .remove-reply {
