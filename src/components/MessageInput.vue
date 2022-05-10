@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper">
-    <div class="reply-preview" v-if="replyId != null && replyData != null">
+    <div class="reply-preview" v-if="replyId != null && replyData != null && reportId == null">
       <a
         title="Remove reply"
         class="remove-reply"
@@ -9,6 +9,20 @@
         >&#215;</a
       >
       <span class="username">{{ replyData.username }}<br /></span>
+      <span class="message">{{ replyData.message }}</span>
+    </div>
+    <div class="report-preview" v-if="reportId != null && replyData != null">
+      <a
+        title="Cancel report"
+        class="remove-reply"
+        @click.prevent="cancelReport"
+        href="#">&#215;</a>
+              <a
+        title="Report the message"
+        class="report-message"
+        @click.prevent="reportMessage"
+        href="#">&#149;</a>
+              <span class="username">Would you like to report {{ replyData.username }}? This is their message:<br /></span>
       <span class="message">{{ replyData.message }}</span>
     </div>
     <div
@@ -41,16 +55,25 @@ export default {
     replyId: {
       required: false,
     },
+    reportId: {
+      required: false,
+    },
     room: String,
   },
-  emits: ["sendMessage", "typing", "removeReply"],
+  emits: ["sendMessage", "typing", "removeReply", "cancelReport", "reportMessage"],
   watch: {
     replyId: {
       immediate: true,
       handler() {
-        if (this.replyId != null) this.getReply()
+        if (this.replyId != null) this.getReply(this.replyId)
       },
     },
+    reportId: {
+      immediate: true,
+      handler() {
+        if(this.reportId != null) this.getReply(this.reportId)
+      }
+    }
   },
   data() {
     let accent = getComputedStyle(document.documentElement).getPropertyValue(
@@ -63,8 +86,8 @@ export default {
     }
   },
   methods: {
-    getReply() {
-      fetch(`${window.serverHost}/api/messages/${this.room}/${this.replyId}`)
+    getReply(e) {
+      fetch(`${window.serverHost}/api/messages/${this.room}/${e}`)
         .then((res) => {
           return res.json()
         })
@@ -75,6 +98,14 @@ export default {
     removeReply() {
       this.replyData = null
       this.$emit("removeReply")
+    },
+    cancelReport() {
+      this.replyData = null
+      this.$emit("cancelReport")
+    },
+    reportMessage() {
+      this.replyData = null
+      this.$emit("reportMessage")
     },
     handlePaste(e) {
       let clipboardData, pastedData
@@ -281,12 +312,40 @@ a {
   font-size: 0.8em;
 }
 
+.report-preview {
+  position: absolute;
+  top: -300px;
+  right: 343px;
+  max-width: 30vw;
+  background: var(--bg-secondary);
+  text-align: left;
+  color: var(--text-primary);
+  max-height: 30vw;
+  transform: translateY(-90%);
+  padding: 50px;
+  border: 2px solid var(--accent);
+  border-radius: 0.4rem;
+  font-size: 0.8em;
+}
+
 .reply-preview .username {
   font-weight: bold;
 }
 
 .reply-preview .message {
   color: var(--text-secondary);
+  width: 500px;
+  word-wrap: break-word
+}
+
+.report-preview .username {
+  font-weight: bold;
+}
+
+.report-preview .message {
+  color: var(--text-secondary);
+  width: 500px;
+  word-wrap: break-word
 }
 
 .remove-reply {
@@ -297,6 +356,20 @@ a {
   line-height: 1;
   color: var(--text-secondary);
   transition: 0.2s color;
+}
+
+.report-message {
+  position: absolute;
+  right: 7px;
+  top: 30px;
+  font-size: 2.5em;
+  line-height: 1;
+  color: var(--text-secondary);
+  transition: 0.2s color;
+}
+
+.report-message:hover {
+  color: var(--text-primary);
 }
 
 .remove-reply:hover {

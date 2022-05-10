@@ -1,6 +1,6 @@
 <template>
 <div class="wrapper">
-  <input @blur="closeAutocomplete" @click="openAutocomplete" @input="updateSuggestions($event)" type="text" name="" value="" placeholder="create or join a room...">
+  <input @blur="closeAutocomplete" @click="openAutocomplete" @input="updateSuggestions($event)" type="text" name="" value="" placeholder="join a pre-made room...">
   <div id="autocomplete" :class="{active: autocompleteOpen}">
     <a href="#" target="_self" v-for="s in currentSuggestions" :key="s.label" @click="performAction(s)" :title="genTitle(s)">
       <div class="suggestion">
@@ -26,22 +26,18 @@ export default {
           "label": "#general",
           "type": "room"
         }, {
-          "label": "#design",
+          "label": "#developers",
           "type": "room"
         }, {
-          "label": "#gamedev",
+          "label": "#games",
           "type": "room"
         }, {
           "label": "#random",
           "type": "room"
         },
         {
-          "label": "log out",
-          "type": "action"
-        },
-        {
-          "label": "theme",
-          "type": "setting"
+          "label": "#help",
+          "type": "room"
         }
       ],
       currentSuggestions: []
@@ -50,7 +46,11 @@ export default {
   methods: {
     performAction(s) {
       if (s.type == "room") {
+        if(s.label == "#general" || s.label == "#developers" || s.label == "#games" || s.label == "#random" || s.label == "#help") {
         this.$emit("roomSearch", s.label);
+        } else {
+        this.$emit("roomSearch", "#general")
+        }
       } else if (s.type == "action") {
         if (s.label == "log out") {
           this.$emit("logOut")
@@ -60,10 +60,12 @@ export default {
     updateSuggestions(e) {
       this.currentSuggestions = this.builtInSuggestions.filter(s => s.label.includes(e.target.value));
       if (e.target.value.length > 0) {
+        if(e.label == "#general" || e.label == "#developers" || e.label == "#games" || e.label == "#random" || e.label == "#help") {
         this.currentSuggestions.unshift({
           "label": `#${event.target.value.replace(/\s+/g, '-')}`,
           "type": "room"
         })
+        }
       }
       this.currentSuggestions = [...new Set(this.currentSuggestions)];
     },

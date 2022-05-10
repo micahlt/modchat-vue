@@ -6,6 +6,7 @@
         :msg="m"
         :key="m.id"
         @reply="handleReply($event)"
+        @report="handleReport($event)"
         :room="room"
       />
     </transition-group>
@@ -21,8 +22,11 @@
     @sendMessage="sendMessage"
     @typing="$emit('typing')"
     @removeReply="replyId = null"
+    @cancelReport="reportId = null"
+    @reportMessage="reportMessage"
     :typingList="typingList"
     :replyId="replyId"
+    :reportId="reportId"
     :room="room"
   />
 </template>
@@ -32,7 +36,7 @@ import MessageInput from "./MessageInput.vue"
 import Message from "./Message.vue"
 export default {
   name: "MessageRender",
-  emits: ["sendMessage", "typing"],
+  emits: ["sendMessage", "typing", "reportMessage"],
   components: {
     MessageInput,
     Message,
@@ -46,6 +50,7 @@ export default {
   data() {
     return {
       replyId: null,
+      reportId: null
     }
   },
   methods: {
@@ -62,6 +67,16 @@ export default {
     handleReply(e) {
       this.replyId = e
     },
+    handleReport(e) {
+      this.reportId = e
+    },
+    reportMessage() {
+      if(this.reportId) {
+      this.$emit('reportMessage', this.reportId)
+      this.reportId = null
+      reportId = null
+      }
+    }
   },
 }
 </script>
@@ -70,7 +85,7 @@ export default {
 <style scoped>
 .render-messages {
   height: calc(100vh - 170px);
-  over/low-y: scroll;
+  overflow-y: scroll;
   overflow-x: hidden;
   padding: 10px;
   display: flex;

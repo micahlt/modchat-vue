@@ -10,6 +10,7 @@
     @sendMessage="sendMessage"
     :messageList="messageList"
     :oldMessageList="oldMessageList"
+    @reportMessage="reportMessage"
     @typing="typing"
     :typingList="typingList"
     v-if="!isBanned"
@@ -91,6 +92,23 @@ export default {
         room: that.currentRoom,
         access_token: this.access_token,
         reply_id: msg.reply_id,
+      })
+    },
+    reportMessage(e) {
+      let that = this
+      fetch(`${process.env.VUE_APP_SERVER}/api/messages/report`, {
+        method: "POST",
+        body: JSON.stringify({
+          username: that.user.name,
+          type: true,
+          room: that.currentRoom,
+          id: e,
+          access_token: that.access_token,
+        }),
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        credentials: "include",
       })
     },
     typing() {
@@ -268,7 +286,7 @@ export default {
           fetch(`${process.env.VUE_APP_SERVER}/api/rooms/${that.currentRoom}`)
             .then((response) => response.json())
             .then((r) => {
-              if(r.current_message_id == 0) {
+              if (r.current_message_id == 0) {
                 socket.connect()
                 return
               }
@@ -380,7 +398,6 @@ export default {
                 }); this is commented out because ATM notifications get spammy
               } */
               }
-              console.log(obj)
               that.messageList.unshift(obj)
             }
           })
@@ -469,6 +486,7 @@ export default {
   color: #2c3e50;
   background: var(--bg-primary);
   height: 100vh;
+  width: 100%;
   display: grid;
   grid-template-columns: 1fr 240px;
   grid-template-rows: 70px 1fr 100px;

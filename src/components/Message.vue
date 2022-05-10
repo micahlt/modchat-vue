@@ -34,22 +34,22 @@
         ></a
       >
       <div v-if="msg.type == 'text'" class="message-content">
-        <div class="actual-content">
-          <div
-            class="reply-preview"
-            v-if="msg.reply_id != null && replyData != null"
-          >
-            <span class="username"
-              ><strong>{{ replyData.username }}</strong>
-              <br />
-            </span>
-            <span class="message">{{ replyData.message }}</span>
-          </div>
+        <div
+          class="reply-preview"
+          v-if="msg.reply_id != null && replyData != null"
+        >
+          <span class="username"
+            ><strong>{{ replyData.username }}</strong>
+            <br />
+          </span>
+          <span class="message">{{ replyData.message }}</span>
+        </div>
+        <div class="msg-actions">
           <Markdown
             class="md"
             :source="filteredContent"
             :linkify="true"
-            :data-balloon-pos="widescreen"
+            data-balloon-pos="up"
             :aria-label="`Message sent ${new Date(msg.time).toLocaleString(
               'en-US',
               {
@@ -63,25 +63,28 @@
               }
             )}`"
           />
+          <a
+            class="msglink link-reply"
+            href="#"
+            @click.prevent="$emit('reply', msg.id)"
+            ><i
+              data-eva="corner-up-left-outline"
+              :data-eva-fill="textSecondary"
+              :data-eva-height="fontSize"
+              :data-eva-width="fontSize"
+            ></i></a
+          ><a
+            class="msglink link-report"
+            @click.prevent="$emit('report', msg.id)"
+            href="#"
+            ><i
+              data-eva="flag-outline"
+              :data-eva-fill="textSecondary"
+              :data-eva-height="fontSize"
+              :data-eva-width="fontSize"
+            ></i
+          ></a>
         </div>
-        <a
-          class="msglink link-reply"
-          href="#"
-          @click.prevent="$emit('reply', msg.id)"
-          ><i
-            data-eva="corner-up-left-outline"
-            :data-eva-fill="textSecondary"
-            :data-eva-height="fontSize"
-            :data-eva-width="fontSize"
-          ></i></a
-        ><a class="msglink link-report" @click.prevent href="#"
-          ><i
-            data-eva="flag-outline"
-            :data-eva-fill="textSecondary"
-            :data-eva-height="fontSize"
-            :data-eva-width="fontSize"
-          ></i
-        ></a>
       </div>
       <img v-else :src="msg.imgsrc" alt="" />
     </div>
@@ -99,26 +102,22 @@ export default {
     msg: Object,
     room: String,
   },
-  emits: ["reply"],
+  emits: ["reply", "report"],
   components: {
     Markdown,
   },
   mounted() {
     eva.replace()
     if (this.msg.reply_id) {
-      this.getReply()
-    } else {
-      console.log("No replies")
+      this.getReply(this.msg.reply_id)
     }
   },
   methods: {
     alert() {
       alert("HEy")
     },
-    getReply() {
-      fetch(
-        `${window.serverHost}/api/messages/${this.room}/${this.msg.reply_id}`
-      )
+    getReply(e) {
+      fetch(`${window.serverHost}/api/messages/${this.room}/${e}`)
         .then((res) => {
           return res.json()
         })
@@ -141,13 +140,6 @@ export default {
     }
   },
   computed: {
-    widescreen() {
-      if (window.innerWidth > 700) {
-        return "right"
-      } else {
-        return "up"
-      }
-    },
     isYou() {
       if (
         JSON.parse(window.localStorage.getItem("user")).name ==
@@ -192,11 +184,12 @@ export default {
 <style scoped>
 .message {
   display: grid;
-  grid-template-columns: auto auto;
-  width: max-content;
-  max-width: 95%;
+  grid-template-columns: auto 1fr;
+  width: 100%;
   margin-right: auto;
   margin-bottom: 10px;
+  text-align: left;
+  justify-content: flex-start;
 }
 .pic {
   grid-column: 1 / 1;
@@ -218,7 +211,8 @@ export default {
   word-wrap: break-word;
   font-size: 0.9em;
   display: flex;
-  width: max-content;
+  flex-direction: column;
+  width: 100%;
   --balloon-color: var(--bg-secondary);
   --balloon-text-color: var(--text-primary);
 }
@@ -249,6 +243,11 @@ export default {
   border-radius: 4px;
 }
 
+.md >>> ol,
+.md >>> ul {
+  list-style-position: inside;
+}
+
 .msglink {
   opacity: 0;
   transition: 0.2s;
@@ -267,6 +266,7 @@ export default {
   margin-top: -2px;
   grid-column: 2 / 2;
   text-align: left;
+  word-break: break-all;
 }
 .badge {
   background: white;
@@ -304,6 +304,7 @@ export default {
   border-radius: 0.4rem;
   font-size: 0.9em;
   margin: 0.7em 0;
+  max-width: max-content;
 }
 
 .reply-preview .username {
@@ -312,5 +313,33 @@ export default {
 
 .reply-preview .message {
   color: var(--text-secondary);
+}
+
+.report-preview {
+  position: absolute;
+  top: 0;
+  right: 20px;
+  max-width: 30vw;
+  background: var(--bg-secondary);
+  text-align: left;
+  color: var(--text-primary);
+  max-height: 30vw;
+  transform: translateY(-90%);
+  padding: 20px;
+  border: 2px solid var(--accent);
+  border-radius: 0.4rem;
+  font-size: 0.8em;
+}
+
+.report-preview .username {
+  font-weight: bold;
+}
+
+.report-preview .message {
+  color: var(--text-secondary);
+}
+
+.msg-actions {
+  display: flex;
 }
 </style>
