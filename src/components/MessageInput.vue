@@ -21,7 +21,8 @@
         title="Report the message"
         class="report-message"
         @click.prevent="reportMessage"
-        href="#">&#149;</a>
+        href="#">GO
+        </a>
               <span class="username">Would you like to report {{ replyData.username }}? This is their message:<br /></span>
       <span class="message">{{ replyData.message }}</span>
     </div>
