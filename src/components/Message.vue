@@ -231,6 +231,11 @@ export default {
   transition: 0.2s fill;
 }
 
+.md,
+.md >>> p {
+  word-break: break-word;
+}
+
 .md >>> a {
   color: var(--text-primary);
   text-decoration: none;
