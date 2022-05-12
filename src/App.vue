@@ -1,5 +1,6 @@
 <template :class="theme">
   <Banned class="banned" v-if="isBanned" />
+  <Disconnected class="banned" v-if="disconnectTimes > 4" />
   <NavBar
     :room="currentRoom"
     class="navbar"
@@ -51,6 +52,7 @@ import NavBar from "./components/NavBar.vue"
 import UsersOnline from "./components/UsersOnline.vue"
 import LoginModal from "./components/LoginModal.vue"
 import Banned from "./components/Banned.vue"
+import Disconnected from "./components/Disconnected.vue"
 const socket = io(window.serverHost, {
   withCredentials: true,
   autoConnect: false,
@@ -67,6 +69,7 @@ export default {
     UsersOnline,
     LoginModal,
     Banned,
+    Disconnected,
   },
   methods: {
     roomChange(name) {
@@ -230,6 +233,7 @@ export default {
       loginErr: "",
       warningShown: false,
       isBanned: false,
+      disconnectTimes: 0,
     }
   },
   mounted() {
@@ -446,6 +450,24 @@ export default {
             socket.off("message")
             socket.off("authenticated")
           })
+          socket.io.on("reconnect", () => {
+            this.disconnectTimes++
+          })
+
+          const stopReconnects = () => {
+            if (this.disconnectTimes > 4) {
+              socket.disconnect()
+            }
+          }
+
+          socket.io.on("reconnect", () => {
+            this.disconnectTimes++
+            stopReconnects()
+          })
+          socket.io.on("reconnect_error", () => {
+            this.disconnectTimes++
+            stopReconnects()
+          })
         })
   },
   computed: {
@@ -544,7 +566,15 @@ MessageRender {
 }
 
 .banned {
-  grid-column: 1 / 4;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 200;
+  background: black;
+  display: grid;
+  place-items: center;
 }
 
 .warning {

@@ -1,55 +1,82 @@
 <template>
-<div class="wrapper">
-  <input @blur="closeAutocomplete" @click="openAutocomplete" @input="updateSuggestions($event)" type="text" name="" value="" placeholder="join a pre-made room...">
-  <div id="autocomplete" :class="{active: autocompleteOpen}">
-    <a href="#" target="_self" v-for="s in currentSuggestions" :key="s.label" @click="performAction(s)" :title="genTitle(s)">
-      <div class="suggestion">
-        {{ s.label }} <span class="lightgray">({{ s.type }})</span>
-      </div>
-    </a>
+  <div class="wrapper">
+    <input
+      @blur="closeAutocomplete"
+      @click="openAutocomplete"
+      @input="updateSuggestions($event)"
+      type="text"
+      name=""
+      value=""
+      placeholder="join a pre-made room..."
+    />
+    <div id="autocomplete" :class="{ active: autocompleteOpen }">
+      <a
+        href="#"
+        target="_self"
+        v-for="s in currentSuggestions"
+        :key="s.label"
+        @click="performAction(s)"
+        :title="genTitle(s)"
+      >
+        <div class="suggestion">
+          {{ s.label }} <span class="lightgray">({{ s.type }})</span>
+        </div>
+      </a>
+    </div>
   </div>
-</div>
 </template>
 
 <script>
 export default {
-  name: 'NavSearch',
+  name: "NavSearch",
   components: {},
   emits: ["roomSearch", "logOut"],
   data() {
-    window.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => {this.updateSuggestions({target: {value: ''}})}, 2000);
-    });
+    window.addEventListener("DOMContentLoaded", () => {
+      setTimeout(() => {
+        this.updateSuggestions({ target: { value: "" } })
+      }, 2000)
+    })
     return {
       autocompleteOpen: false,
-      builtInSuggestions: [{
-          "label": "#general",
-          "type": "room"
-        }, {
-          "label": "#developers",
-          "type": "room"
-        }, {
-          "label": "#games",
-          "type": "room"
-        }, {
-          "label": "#random",
-          "type": "room"
+      builtInSuggestions: [
+        {
+          label: "#general",
+          type: "room",
         },
         {
-          "label": "#help",
-          "type": "room"
-        }
+          label: "#developers",
+          type: "room",
+        },
+        {
+          label: "#games",
+          type: "room",
+        },
+        {
+          label: "#random",
+          type: "room",
+        },
+        {
+          label: "#help",
+          type: "room",
+        },
       ],
-      currentSuggestions: []
+      currentSuggestions: [],
     }
   },
   methods: {
     performAction(s) {
       if (s.type == "room") {
-        if(s.label == "#general" || s.label == "#developers" || s.label == "#games" || s.label == "#random" || s.label == "#help") {
-        this.$emit("roomSearch", s.label);
+        if (
+          s.label == "#general" ||
+          s.label == "#developers" ||
+          s.label == "#games" ||
+          s.label == "#random" ||
+          s.label == "#help"
+        ) {
+          this.$emit("roomSearch", s.label)
         } else {
-        this.$emit("roomSearch", "#general")
+          this.$emit("roomSearch", "#general")
         }
       } else if (s.type == "action") {
         if (s.label == "log out") {
@@ -58,34 +85,42 @@ export default {
       }
     },
     updateSuggestions(e) {
-      this.currentSuggestions = this.builtInSuggestions.filter(s => s.label.includes(e.target.value));
+      this.currentSuggestions = this.builtInSuggestions.filter((s) =>
+        s.label.includes(e.target.value)
+      )
       if (e.target.value.length > 0) {
-        if(e.label == "#general" || e.label == "#developers" || e.label == "#games" || e.label == "#random" || e.label == "#help") {
-        this.currentSuggestions.unshift({
-          "label": `#${event.target.value.replace(/\s+/g, '-')}`,
-          "type": "room"
-        })
+        if (
+          e.label == "#general" ||
+          e.label == "#developers" ||
+          e.label == "#games" ||
+          e.label == "#random" ||
+          e.label == "#help"
+        ) {
+          this.currentSuggestions.unshift({
+            label: `#${event.target.value.replace(/\s+/g, "-")}`,
+            type: "room",
+          })
         }
       }
-      this.currentSuggestions = [...new Set(this.currentSuggestions)];
+      this.currentSuggestions = [...new Set(this.currentSuggestions)]
     },
     openAutocomplete() {
-      this.autocompleteOpen = true;
+      this.autocompleteOpen = true
     },
     closeAutocomplete() {
-      this.autocompleteOpen = false;
+      this.autocompleteOpen = false
     },
     genTitle(s) {
       switch (s.type) {
         case "room":
-          return `Go to the ${s.label} room`;
+          return `Go to the ${s.label} room`
         case "action":
           return s.label
         case "setting":
           return `Change the ${s.label} setting`
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -114,10 +149,11 @@ export default {
   transition: height 0.2s 0.2s, opacity 0.3s 0.2s;
   padding-top: 20px;
   text-align: left;
-  padding-left: .2em;
-  padding-right: .2em;
+  padding-left: 0.2em;
+  padding-right: 0.2em;
   padding-bottom: 10px;
   overflow-y: auto;
+  z-index: 1;
 }
 
 #autocomplete::-webkit-scrollbar {
@@ -139,7 +175,7 @@ export default {
 }
 
 .lightgray {
-  color: var(--text-secondary)
+  color: var(--text-secondary);
 }
 
 .active {
@@ -169,8 +205,8 @@ a {
 
 input {
   position: absolute;
-  z-index: 1;
-  font-family: 'Inter', sans-serif;
+  z-index: 2;
+  font-family: "Inter", sans-serif;
   font-size: 0.9em;
   height: 2em;
   width: 11em;
@@ -188,7 +224,8 @@ input {
 
 input:focus {
   outline: none;
-  transition: width 0.2s, box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
+  transition: width 0.2s, box-shadow 0.2s, border-color 0.2s,
+    background-color 0.2s;
   width: 15.4em;
   background-color: var(--bg-tertiary);
   box-shadow: var(--shadow);
