@@ -43,6 +43,7 @@
       @keydown="sendTyping"
       @paste="handlePaste($event)"
       ref="input"
+      id="input"
     ></div>
     <div class="typing lightgray">{{ typingMessage }}</div>
     <div class="action-btns">
@@ -178,6 +179,12 @@ export default {
     setInterval(() => {
       this.typingMessage = this.constructTypingMessage()
     }, 600)
+    document.getElementById("input").addEventListener("keydown", (e) => {
+      if (e.key == "i" && e.ctrlKey) {
+        e.preventDefault()
+        this.$refs.input.value = this.$refs.input.value += "__"
+      }
+    })
   },
 }
 </script>
