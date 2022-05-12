@@ -14,14 +14,25 @@
     <div class="grid-2">
       <div class="nav-options">
         <a href="#" target="_self" title="Notifications" class="show-mobile"
-          ><i data-eva="people-outline" data-eva-fill="#ddd"></i
+          ><i data-eva="people-outline" :data-eva-fill="textColor"></i
         ></a>
-        <a href="#" target="_self" title="Change Theme" @click="changeTheme"
-          ><i data-eva="moon-outline" :data-eva-fill="textColor"></i
+        <a
+          href="#"
+          target="_self"
+          title="Open Settings"
+          @click="settingsOpened = !settingsOpened"
+          ><i data-eva="settings-outline" :data-eva-fill="textColor"></i
         ></a>
         <a href="#" target="_self" title="Log Out" @click="logOut"
           ><i data-eva="log-out" :data-eva-fill="textColor"></i
         ></a>
+        <transition name="fade">
+          <Settings
+            v-if="settingsOpened"
+            @changeTheme="changeTheme"
+            @changeNotifs="changeNotifs"
+          />
+        </transition>
       </div>
       <div class="logo"></div>
     </div>
@@ -30,12 +41,14 @@
 
 <script>
 import NavSearch from "./NavSearch.vue"
+import Settings from "./Settings.vue"
 import * as eva from "eva-icons"
 export default {
   name: "NavBar",
   emits: ["roomSearch"],
   components: {
     NavSearch,
+    Settings,
   },
   props: {
     room: String,
@@ -49,6 +62,7 @@ export default {
     )
     return {
       textColor,
+      settingsOpened: false,
     }
   },
   methods: {
@@ -75,6 +89,22 @@ export default {
         )
         window.location.reload()
       })
+    },
+    changeNotifs() {
+      switch (window.localStorage.getItem("notifs")) {
+        case "default": {
+          window.localStorage.setItem("notifs", "off")
+          break
+        }
+        case "on": {
+          window.localStorage.setItem("notifs", "off")
+          break
+        }
+        case "off": {
+          window.localStorage.setItem("notifs", "on")
+          break
+        }
+      }
     },
     changeTheme() {
       switch (window.localStorage.getItem("theme")) {
@@ -104,7 +134,6 @@ export default {
   },
 }
 </script>
-
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .grid-1 {
@@ -119,6 +148,7 @@ export default {
 .nav-options {
   border-right: solid 2px var(--outline);
   padding-right: 30px;
+  position: relative;
 }
 .nav-options a {
   padding: 10px;
@@ -209,5 +239,16 @@ i {
 
 .eva {
   fill: var(--text-primary);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(5%);
 }
 </style>

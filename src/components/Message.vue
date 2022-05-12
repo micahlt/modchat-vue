@@ -1,5 +1,5 @@
  <template>
-  <div class="message" :data-id="msg.id">
+  <div :class="{ message: true, descendant: !showFrame }" :data-id="msg.id">
     <base target="_blank" />
     <a
       :href="`https://scratch.mit.edu/users/${msg.username}`"
@@ -35,10 +35,7 @@
           >DEV</span
         ></a
       >
-      <div
-        v-if="msg.type == 'text'"
-        :class="{ 'message-content': true, descendant: !showFrame }"
-      >
+      <div v-if="msg.type == 'text'" class="message-content">
         <div
           class="reply-preview"
           v-if="msg.reply_id != null && replyData != null"
@@ -54,10 +51,9 @@
             class="md"
             :source="filteredContent"
             :linkify="true"
-            data-balloon-pos="down"
-            :aria-label="`Message sent ${new Date(msg.time).toLocaleString(
-              'en-US',
-              {
+            data-balloon-pos="up"
+            :aria-label="
+              new Date(msg.time).toLocaleString('en-US', {
                 hour: 'numeric',
                 minute: 'numeric',
                 hour12: true,
@@ -65,8 +61,8 @@
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
-              }
-            )}`"
+              })
+            "
           />
           <a
             class="msglink link-reply"
@@ -187,16 +183,20 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.descendant {
+  margin-top: 0 !important;
+  margin-bottom: 6px;
+}
 .message {
   display: grid;
   grid-template-columns: auto 1fr;
   width: 100%;
   margin-right: auto;
-  margin-bottom: 10px;
+  margin-top: 10px;
   text-align: left;
   justify-content: flex-start;
+  margin-bottom: 6px;
 }
 .pic {
   grid-column: 1 / 1;
@@ -204,7 +204,6 @@ export default {
   width: 35px;
   border-radius: 100%;
   background: white;
-  border: solid 2px var(--outline);
 }
 .username {
   color: var(--text-secondary);
@@ -224,7 +223,7 @@ export default {
   --balloon-text-color: var(--text-primary);
 }
 .message-content:hover .msglink {
-  transform: translateY(-0.25em);
+  transform: translateY(0);
   opacity: 1;
   transition: 0.2s;
 }
@@ -264,18 +263,20 @@ export default {
 .msglink {
   opacity: 0;
   transition: 0.2s;
-  transform: translateY(2px);
+  transform: translateY(4px);
   margin-top: auto;
 }
 .msglink:first-of-type {
   margin-left: 5px;
 }
 .msglink svg {
-  transform: translateY(4px);
+  transform: translateY(0px);
+  height: 1.2em;
+  width: 1.2em;
 }
 
-.descendant {
-  margin-left: 40px;
+.descendant .message-content {
+  margin-left: 35px;
 }
 
 .gridcol-2 {
@@ -320,7 +321,7 @@ export default {
   border-left: 2px solid var(--light-accent);
   border-radius: 0.4rem;
   font-size: 0.9em;
-  margin: 0.7em 0;
+  margin: 0.4em 0;
   max-width: max-content;
 }
 
@@ -330,6 +331,7 @@ export default {
 
 .reply-preview .message {
   color: var(--text-secondary);
+  margin-top: 0;
 }
 
 .report-preview {
@@ -358,5 +360,13 @@ export default {
 
 .msg-actions {
   display: flex;
+}
+
+[aria-label][data-balloon-pos][data-balloon-pos="up"]:before {
+  left: 0;
+}
+
+[aria-label][data-balloon-pos][data-balloon-pos="up"]:after {
+  left: 60px;
 }
 </style>
