@@ -2,12 +2,17 @@
   <div id="renderDiv" class="render-messages">
     <transition-group name="list" @enter="scroll()">
       <Message
-        v-for="m in messageList"
+        v-for="(m, i) in messageList"
         :msg="m"
         :key="m.id"
         @reply="handleReply($event)"
         @report="handleReport($event)"
         :room="room"
+        :showFrame="
+          i < messageList.length - 1
+            ? messageList[i + 1].username != m.username
+            : true
+        "
       />
     </transition-group>
     <Message
@@ -87,8 +92,8 @@ export default {
   overflow-y: scroll;
   overflow-x: hidden;
   padding: 10px;
+  padding-left: 20px;
   display: flex;
-  margin-left: 10px;
   flex-direction: column-reverse;
   background: var(--bg-primary);
 }

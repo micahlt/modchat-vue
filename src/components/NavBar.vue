@@ -13,8 +13,8 @@
     </div>
     <div class="grid-2">
       <div class="nav-options">
-        <a href="#" target="_self" title="Notifications"
-          ><i data-eva="bell-outline" data-eva-fill="#ddd"></i
+        <a href="#" target="_self" title="Notifications" class="show-mobile"
+          ><i data-eva="people-outline" data-eva-fill="#ddd"></i
         ></a>
         <a href="#" target="_self" title="Change Theme" @click="changeTheme"
           ><i data-eva="moon-outline" :data-eva-fill="textColor"></i
@@ -133,6 +133,9 @@ export default {
 i {
   color: var(--text-primary);
 }
+.show-mobile {
+  display: none;
+}
 .nav {
   position: relative;
   background: var(--bg-secondary);
@@ -197,6 +200,10 @@ i {
   .nav-options {
     border-right: none;
     padding-right: 8px;
+  }
+
+  .show-mobile {
+    display: initial;
   }
 }
 

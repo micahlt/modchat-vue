@@ -5,6 +5,7 @@
       :href="`https://scratch.mit.edu/users/${msg.username}`"
       class="username"
       :title="`Visit ${msg.username} on Scratch`"
+      v-if="showFrame"
     >
       <img :src="msg.profilePicture" class="pic" :alt="msg.username" />
     </a>
@@ -13,6 +14,7 @@
         :href="`https://scratch.mit.edu/users/${msg.username}`"
         class="username"
         :title="`Visit ${msg.username} on Scratch`"
+        v-if="showFrame"
         >{{ msg.username }}
         <span class="badge b-purple" v-if="isYou" title="This is your account."
           >YOU</span
@@ -23,9 +25,9 @@
           >BOT</span
         ><span
           class="badge b-red"
-          v-if="msg.username == '-Archon-'"
-          title="This person created Modchat."
-          >CREATOR</span
+          v-if="mods.includes(msg.username)"
+          title="This person is a moderator."
+          >MOD</span
         ><span
           class="badge b-green"
           v-if="devs.includes(msg.username)"
@@ -33,7 +35,10 @@
           >DEV</span
         ></a
       >
-      <div v-if="msg.type == 'text'" class="message-content">
+      <div
+        v-if="msg.type == 'text'"
+        :class="{ 'message-content': true, descendant: !showFrame }"
+      >
         <div
           class="reply-preview"
           v-if="msg.reply_id != null && replyData != null"
@@ -49,7 +54,7 @@
             class="md"
             :source="filteredContent"
             :linkify="true"
-            data-balloon-pos="up"
+            data-balloon-pos="down"
             :aria-label="`Message sent ${new Date(msg.time).toLocaleString(
               'en-US',
               {
@@ -101,6 +106,7 @@ export default {
   props: {
     msg: Object,
     room: String,
+    showFrame: Boolean,
   },
   emits: ["reply", "report"],
   components: {
@@ -136,6 +142,7 @@ export default {
       textSecondary,
       fontSize,
       devs: ["-Archon-", "b1048546", "AmazingMech2418"],
+      mods: ["-Archon-", "b1048546", "da-ta"],
       replyData: null,
     }
   },
@@ -213,7 +220,7 @@ export default {
   display: flex;
   flex-direction: column;
   width: 100%;
-  --balloon-color: var(--bg-secondary);
+  --balloon-color: var(--outline);
   --balloon-text-color: var(--text-primary);
 }
 .message-content:hover .msglink {
@@ -234,6 +241,7 @@ export default {
 .md,
 .md >>> p {
   word-break: break-word;
+  cursor: initial;
 }
 
 .md >>> a {
@@ -264,6 +272,10 @@ export default {
 }
 .msglink svg {
   transform: translateY(4px);
+}
+
+.descendant {
+  margin-left: 40px;
 }
 
 .gridcol-2 {

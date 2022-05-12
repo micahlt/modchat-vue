@@ -7,7 +7,7 @@
       type="text"
       name=""
       value=""
-      placeholder="join a pre-made room..."
+      placeholder="join a room..."
     />
     <div id="autocomplete" :class="{ active: autocompleteOpen }">
       <a
