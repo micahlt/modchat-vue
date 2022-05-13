@@ -31,6 +31,7 @@
             v-if="settingsOpened"
             @changeTheme="changeTheme"
             @changeNotifs="changeNotifs"
+            @changeFrame="changeFrame"
           />
         </transition>
       </div>
@@ -90,18 +91,30 @@ export default {
         window.location.reload()
       })
     },
-    changeNotifs() {
-      switch (window.localStorage.getItem("notifs")) {
-        case "default": {
-          window.localStorage.setItem("notifs", "off")
+    changeFrame() {
+      switch (window.localStorage.getItem("showFrame")) {
+        case "true": {
+          window.localStorage.setItem("showFrame", "false")
           break
         }
-        case "on": {
+        case "false": {
+          window.localStorage.setItem("showFrame", "true")
+          break
+        }
+      }
+    },
+    changeNotifs() {
+      switch (window.localStorage.getItem("notifs")) {
+        case "mentions": {
+          window.localStorage.setItem("notifs", "all")
+          break
+        }
+        case "all": {
           window.localStorage.setItem("notifs", "off")
           break
         }
         case "off": {
-          window.localStorage.setItem("notifs", "on")
+          window.localStorage.setItem("notifs", "mentions")
           break
         }
       }

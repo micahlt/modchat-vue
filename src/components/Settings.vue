@@ -20,6 +20,16 @@
       ></a>
       <p>Notifications are {{ notifStatus }}</p>
     </div>
+    <div class="opt">
+      <a
+        href="#"
+        target="_self"
+        title="Toggle frame"
+        @click.prevent="$emit('changeFrame')"
+        ><i data-eva="browser-outline" :data-eva-fill="textColor"></i
+      ></a>
+      <p>Frame status is {{ frameStatus }}</p>
+    </div>
   </div>
 </template>
 
@@ -34,9 +44,12 @@ export default {
     let textColor = getComputedStyle(document.documentElement).getPropertyValue(
       "--text-primary"
     )
+    if(!window.localStorage.getItem("notifs")) window.localStorage.setItem("notifs", "off")
+    if(!window.localStorage.getItem("showFrame")) window.localStorage.setItem("showFrame", "false")
     return {
       textColor,
-      notifStatus: JSON.parse(window.localStorage.getItem("notifs")) || "off",
+      notifStatus: window.localStorage.getItem("notifs"),
+      frameStatus: window.localStorage.getItem("showFrame")
     }
   },
 }

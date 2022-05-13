@@ -386,7 +386,7 @@ export default {
                 if (
                   obj.content
                     .toLowerCase()
-                    .includes("@" + that.user.name.toLowerCase())
+                    .includes("@" + that.user.name.toLowerCase()) && window.localStorage.getItem("notifs") !== "off"
                 ) {
                   new Notification("Modchat", {
                     body:
@@ -395,12 +395,12 @@ export default {
                   })
                   that.messageList.unshift(obj)
                   return false
-                } /* else {
+                } else if(window.localStorage.getItem("notifs") === "all") {
                 new Notification("Modchat", {
                   body: obj.username + ": '" + obj.content + "'",
                   icon: "/img/512x512.png"
-                }); this is commented out because ATM notifications get spammy
-              } */
+                });
+                } 
               }
               that.messageList.unshift(obj)
             }

@@ -5,7 +5,7 @@
       :href="`https://scratch.mit.edu/users/${msg.username}`"
       class="username"
       :title="`Visit ${msg.username} on Scratch`"
-      v-if="showFrame"
+      v-if="showFrame || frameShow ==='true'"
     >
       <img :src="msg.profilePicture" class="pic" :alt="msg.username" />
     </a>
@@ -14,7 +14,7 @@
         :href="`https://scratch.mit.edu/users/${msg.username}`"
         class="username"
         :title="`Visit ${msg.username} on Scratch`"
-        v-if="showFrame"
+        v-if="showFrame || frameShow === 'true'"
         >{{ msg.username }}
         <span class="badge b-purple" v-if="isYou" title="This is your account."
           >YOU</span
@@ -138,8 +138,9 @@ export default {
       textSecondary,
       fontSize,
       devs: ["-Archon-", "b1048546", "AmazingMech2418"],
-      mods: ["-Archon-", "b1048546", "da-ta"],
+      mods: ["-Archon-", "b1048546", "da-ta", "Biker2000"],
       replyData: null,
+      frameShow: window.localStorage.getItem('showFrame')
     }
   },
   computed: {

@@ -8,11 +8,9 @@
         @reply="handleReply($event)"
         @report="handleReport($event)"
         :room="room"
-        :showFrame="
+        :showFrame= "
           i < messageList.length - 1
-            ? messageList[i + 1].username != m.username
-            : true
-        "
+            ? messageList[i + 1].username != m.username: true"
       />
     </transition-group>
     <Message
@@ -56,6 +54,7 @@ export default {
     return {
       replyId: null,
       reportId: null,
+      frameShow: window.localStorage.getItem("showFrame")
     }
   },
   methods: {
