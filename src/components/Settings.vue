@@ -5,7 +5,7 @@
         href="#"
         target="_self"
         title="Toggle theme"
-        @click.prevent="$emit('changeTheme')"
+        @click.prevent="changeTheme"
         ><i data-eva="moon-outline" :data-eva-fill="textColor"></i
       ></a>
       <p>Theme</p>
@@ -15,20 +15,20 @@
         href="#"
         target="_self"
         title="Toggle notifications"
-        @click.prevent="$emit('changeNotifs')"
+        @click.prevent="changeNotifs"
         ><i data-eva="bell-outline" :data-eva-fill="textColor"></i
       ></a>
-      <p>Notifications are {{ notifStatus }}</p>
+      <p>Notifications {{ notifStatus }}</p>
     </div>
     <div class="opt">
       <a
         href="#"
         target="_self"
         title="Toggle frame"
-        @click.prevent="$emit('changeFrame')"
-        ><i data-eva="browser-outline" :data-eva-fill="textColor"></i
+        @click.prevent="changeFrame"
+        ><i data-eva="menu-2-outline" :data-eva-fill="textColor"></i
       ></a>
-      <p>Frame status is {{ frameStatus }}</p>
+      <p>Message grouping {{ frameStatus == "true" ? "off" : "on" }}</p>
     </div>
   </div>
 </template>
@@ -36,7 +36,7 @@
 <script>
 import * as eva from "eva-icons"
 export default {
-  emits: ["changeTheme", "changeNotifs"],
+  emits: ["changeTheme", "changeNotifs", "changeFrame", "close"],
   mounted() {
     eva.replace()
   },
@@ -44,13 +44,29 @@ export default {
     let textColor = getComputedStyle(document.documentElement).getPropertyValue(
       "--text-primary"
     )
-    if(!window.localStorage.getItem("notifs")) window.localStorage.setItem("notifs", "off")
-    if(!window.localStorage.getItem("showFrame")) window.localStorage.setItem("showFrame", "false")
+    if (!window.localStorage.getItem("notifs"))
+      window.localStorage.setItem("notifs", "off")
+    if (!window.localStorage.getItem("showFrame"))
+      window.localStorage.setItem("showFrame", "false")
     return {
       textColor,
       notifStatus: window.localStorage.getItem("notifs"),
-      frameStatus: window.localStorage.getItem("showFrame")
+      frameStatus: window.localStorage.getItem("showFrame"),
     }
+  },
+  methods: {
+    changeTheme() {
+      this.$emit("changeTheme")
+      this.$emit("close")
+    },
+    changeNotifs() {
+      this.$emit("changeNotifs")
+      this.$emit("close")
+    },
+    changeFrame() {
+      this.$emit("changeFrame")
+      this.$emit("close")
+    },
   },
 }
 </script>
@@ -65,6 +81,7 @@ export default {
   box-shadow: 0 5px 10px rgb(0 0 0 / 50%);
   border-radius: 0.3rem;
   padding: 1rem;
+  width: max-content;
 }
 
 .opt {

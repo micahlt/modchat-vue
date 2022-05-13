@@ -1,11 +1,14 @@
  <template>
-  <div :class="{ message: true, descendant: !showFrame }" :data-id="msg.id">
+  <div
+    :class="{ message: true, descendant: !showFrame && frameShow == 'false' }"
+    :data-id="msg.id"
+  >
     <base target="_blank" />
     <a
       :href="`https://scratch.mit.edu/users/${msg.username}`"
       class="username"
       :title="`Visit ${msg.username} on Scratch`"
-      v-if="showFrame || frameShow ==='true'"
+      v-if="showFrame || frameShow === 'true'"
     >
       <img :src="msg.profilePicture" class="pic" :alt="msg.username" />
     </a>
@@ -140,7 +143,7 @@ export default {
       devs: ["-Archon-", "b1048546", "AmazingMech2418"],
       mods: ["-Archon-", "b1048546", "da-ta", "Biker2000"],
       replyData: null,
-      frameShow: window.localStorage.getItem('showFrame')
+      frameShow: window.localStorage.getItem("showFrame"),
     }
   },
   computed: {

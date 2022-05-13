@@ -8,9 +8,11 @@
         @reply="handleReply($event)"
         @report="handleReport($event)"
         :room="room"
-        :showFrame= "
+        :showFrame="
           i < messageList.length - 1
-            ? messageList[i + 1].username != m.username: true"
+            ? messageList[i + 1].username != m.username
+            : true
+        "
       />
     </transition-group>
     <Message
@@ -18,7 +20,13 @@
       :msg="m"
       :key="m.id"
       @reply="handleReply($event)"
+      @report="handleReport($event)"
       :room="room"
+      :showFrame="
+        i < messageList.length - 1
+          ? messageList[i + 1].username != m.username
+          : true
+      "
     />
   </div>
   <MessageInput
@@ -54,7 +62,7 @@ export default {
     return {
       replyId: null,
       reportId: null,
-      frameShow: window.localStorage.getItem("showFrame")
+      frameShow: window.localStorage.getItem("showFrame"),
     }
   },
   methods: {

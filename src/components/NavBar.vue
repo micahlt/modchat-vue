@@ -32,6 +32,7 @@
             @changeTheme="changeTheme"
             @changeNotifs="changeNotifs"
             @changeFrame="changeFrame"
+            @close="settingsOpened = !settingsOpened"
           />
         </transition>
       </div>
@@ -56,6 +57,9 @@ export default {
   },
   mounted() {
     eva.replace()
+    if (!window.localStorage.getItem("showFrame")) {
+      window.localStorage.setItem("showFrame", false)
+    }
   },
   data() {
     let textColor = getComputedStyle(document.documentElement).getPropertyValue(
