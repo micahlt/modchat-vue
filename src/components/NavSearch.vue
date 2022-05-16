@@ -60,6 +60,10 @@ export default {
           label: "#help",
           type: "room",
         },
+        {
+          label: "#roleplay",
+          type: "room",
+        }
       ],
       currentSuggestions: [],
     }
@@ -72,7 +76,8 @@ export default {
           s.label == "#developers" ||
           s.label == "#games" ||
           s.label == "#random" ||
-          s.label == "#help"
+          s.label == "#help" ||
+          s.label == "#roleplay"
         ) {
           this.$emit("roomSearch", s.label)
         } else {
@@ -94,7 +99,8 @@ export default {
           e.label == "#developers" ||
           e.label == "#games" ||
           e.label == "#random" ||
-          e.label == "#help"
+          e.label == "#help" ||
+          e.label == "#roleplay"
         ) {
           this.currentSuggestions.unshift({
             label: `#${event.target.value.replace(/\s+/g, "-")}`,

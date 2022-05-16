@@ -138,6 +138,10 @@ export default {
       this.$emit("typing")
     },
     sendMessage(e) {
+      if (e.shiftKey === true && e.key === "Enter") {
+        window.document.execCommand("insertText", false, "\n")
+        return
+      }
       this.$emit("sendMessage", {
         content: this.$refs.input.innerText,
         type: "text",
@@ -256,6 +260,9 @@ a {
   transition: box-shadow 0.4s, border-color 0.4s, background-color 0.4s,
     height 0.1s;
   overflow-y: scroll;
+  position: absolute;
+  width: calc(100% - 40px - 2em);
+  bottom: 17px;
 }
 
 .file {

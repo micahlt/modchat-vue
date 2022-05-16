@@ -1,4 +1,9 @@
 <template :class="theme">
+  <Announcement
+    v-if="localVersion != version"
+    :version="version"
+    @close="localVersion = version"
+  />
   <Banned class="banned" v-if="isBanned" />
   <Disconnected class="banned" v-if="disconnectTimes > 4" />
   <NavBar
@@ -46,6 +51,7 @@
 // These global variables are used to provide API and redirect routes.  You can change these by changing your environment variables.  There's a good tutorial here: https://www.twilio.com/blog/2017/01/how-to-set-environment-variables.html
 window.serverHost = process.env.VUE_APP_SERVER
 window.clientHost = process.env.VUE_APP_CLIENT
+const VERSION = "2.1.0"
 import { io } from "socket.io-client"
 import MessageRender from "./components/MessageRender.vue"
 import NavBar from "./components/NavBar.vue"
@@ -53,13 +59,16 @@ import UsersOnline from "./components/UsersOnline.vue"
 import LoginModal from "./components/LoginModal.vue"
 import Banned from "./components/Banned.vue"
 import Disconnected from "./components/Disconnected.vue"
+import Announcement from "./components/Announcement.vue"
 const socket = io(window.serverHost, {
   withCredentials: true,
   autoConnect: false,
 })
 
-if (Notification.permission == "default") {
-  Notification.requestPermission()
+if ("Notification" in window) {
+  if (Notification.permission == "default") {
+    Notification.requestPermission()
+  }
 }
 export default {
   name: "App",
@@ -70,6 +79,7 @@ export default {
     LoginModal,
     Banned,
     Disconnected,
+    Announcement,
   },
   methods: {
     roomChange(name) {
@@ -195,13 +205,21 @@ export default {
     },
   },
   data() {
-    let violations
+    let violations, localVersion
     if (!window.localStorage.getItem("violations")) {
       window.localStorage.setItem("violations", 0)
       violations = 0
     } else {
       violations = window.localStorage.getItem("violations")
     }
+
+    if (!window.localStorage.getItem("v")) {
+      window.localStorage.setItem("v", 0)
+      localVersion = 0
+    } else {
+      localVersion = window.localStorage.getItem("v")
+    }
+
     if (!window.localStorage.getItem("user")) {
       window.localStorage.setItem(
         "user",
@@ -234,6 +252,8 @@ export default {
       warningShown: false,
       isBanned: false,
       disconnectTimes: 0,
+      version: VERSION,
+      localVersion,
     }
   },
   mounted() {
@@ -382,11 +402,12 @@ export default {
             if (obj.old) {
               that.oldMessageList.unshift(obj)
             } else {
-              if (that.blurred) {
+              if (that.blurred && "Notification" in window) {
                 if (
                   obj.content
                     .toLowerCase()
-                    .includes("@" + that.user.name.toLowerCase()) && window.localStorage.getItem("notifs") !== "off"
+                    .includes("@" + that.user.name.toLowerCase()) &&
+                  window.localStorage.getItem("notifs") !== "off"
                 ) {
                   new Notification("Modchat", {
                     body:
@@ -395,12 +416,12 @@ export default {
                   })
                   that.messageList.unshift(obj)
                   return false
-                } else if(window.localStorage.getItem("notifs") === "all") {
-                new Notification("Modchat", {
-                  body: obj.username + ": '" + obj.content + "'",
-                  icon: "/img/512x512.png"
-                });
-                } 
+                } else if (window.localStorage.getItem("notifs") === "all") {
+                  new Notification("Modchat", {
+                    body: obj.username + ": '" + obj.content + "'",
+                    icon: "/img/512x512.png",
+                  })
+                }
               }
               that.messageList.unshift(obj)
             }
@@ -500,6 +521,10 @@ export default {
 </script>
 
 <style>
+body {
+  overflow: hidden;
+}
+
 #app {
   font-family: "Inter", Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -507,12 +532,15 @@ export default {
   text-align: center;
   color: #2c3e50;
   background: var(--bg-primary);
-  height: 100vh;
+  height: calc(100% - env(safe-area-inset-bottom));
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 240px;
   grid-template-rows: 70px 1fr 100px;
   overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 
 MessageRender {

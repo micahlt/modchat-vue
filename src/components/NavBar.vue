@@ -21,7 +21,7 @@
           target="_self"
           title="Open Settings"
           @click="settingsOpened = !settingsOpened"
-          ><i data-eva="settings-outline" :data-eva-fill="textColor"></i
+          ><i data-eva="options-2-outline" :data-eva-fill="textColor"></i
         ></a>
         <a href="#" target="_self" title="Log Out" @click="logOut"
           ><i data-eva="log-out" :data-eva-fill="textColor"></i

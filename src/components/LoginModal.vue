@@ -1,119 +1,163 @@
 <template>
-<div class="login-modal">
-  <div class="content pad-bottom">
-    <img src="../assets/logo-darkmode.png" alt="Modchat logo">
-    <transition-group name="fade">
-      <div class="content" v-if="mode == 'landing'">
-        <div class="subheader">Join the conversation</div>
-        <a class="big-btn mc-btn" href="#" title="For existing Modchat accounts" @click="existingAccount">Log
-          in with Modchat</a>
-        <a class="big-btn soa-btn" :href="`https://oauth2.scratch-wiki.info/w/index.php?title=Special:ScratchOAuth2/authorize&client_id=940001774&redirect_uri=${clientURL}&scopes=identify&state=login`" title="Powered by Scratch OAuth2">Sign
-          up with <span>Scratch</span></a>
-      </div>
-      <div class="content" v-if="mode == 'signup'">
-        <div class="subheader">Sign up for a Modchat account</div>
-        <br>
-        <TextBox v-model="suUsr" :placeholder="username" disabled="true" @enterKey="signUp"></TextBox><br>
-        <TextBox v-model="suPwd" @input="ping" placeholder="Password" @enterKey="signUp"></TextBox>
-        <PrimaryButton class="primary-btn" title="Sign Up" @click="signUp">Sign Up</PrimaryButton>
-      </div>
-      <div class="content" v-if="mode == 'login'">
-        <div class="subheader">Log in to your Modchat account</div>
-        <br>
-        <TextBox placeholder="Username" v-model="liUsr" @enterKey="logIn"></TextBox><br>
-        <TextBox placeholder="Password" v-model="liPwd" type="password" @enterKey="logIn"></TextBox>
-        <PrimaryButton class="primary-btn" title="Log In" @click="logIn">Log In</PrimaryButton>
-      </div>
-    </transition-group>
-    <div class="error" v-if="error.length > 0">{{ error }}</div>
-    <span class="footer"><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></span>
+  <div class="login-modal">
+    <div class="content pad-bottom">
+      <img src="../assets/logo-darkmode.png" alt="Modchat logo" />
+      <transition-group name="fade">
+        <div class="content" v-if="mode == 'landing'">
+          <div class="subheader">Join the conversation</div>
+          <a
+            class="big-btn mc-btn"
+            href="#"
+            title="For existing Modchat accounts"
+            @click.prevent="existingAccount"
+            >Log in with Modchat</a
+          >
+          <a
+            class="big-btn soa-btn"
+            :href="`https://oauth2.scratch-wiki.info/w/index.php?title=Special:ScratchOAuth2/authorize&client_id=940001774&redirect_uri=${clientURL}&scopes=identify&state=login`"
+            title="Powered by Scratch OAuth2"
+            >Sign up with <span>Scratch</span></a
+          >
+        </div>
+        <div class="content" v-if="mode == 'signup'">
+          <div class="subheader">Sign up for a Modchat account</div>
+          <br />
+          <TextBox
+            v-model="suUsr"
+            :placeholder="username"
+            disabled="true"
+            @enterKey="signUp"
+          ></TextBox
+          ><br />
+          <TextBox
+            v-model="suPwd"
+            @input="ping"
+            placeholder="Password"
+            @enterKey="signUp"
+          ></TextBox>
+          <PrimaryButton
+            class="primary-btn"
+            title="Sign Up"
+            @click.prevent="signUp"
+            >Sign Up</PrimaryButton
+          >
+        </div>
+        <div class="content" v-if="mode == 'login'">
+          <div class="subheader">Log in to your Modchat account</div>
+          <br />
+          <TextBox
+            placeholder="Username"
+            v-model="liUsr"
+            @enterKey="logIn"
+          ></TextBox
+          ><br />
+          <TextBox
+            placeholder="Password"
+            v-model="liPwd"
+            type="password"
+            @enterKey="logIn"
+          ></TextBox>
+          <PrimaryButton
+            class="primary-btn"
+            title="Log In"
+            @click.prevent="logIn"
+            >Log In</PrimaryButton
+          >
+        </div>
+      </transition-group>
+      <div class="error" v-if="error.length > 0">{{ error }}</div>
+      <span class="footer"
+        ><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></span
+      >
+    </div>
   </div>
-</div>
 </template>
 
 <script>
-import TextBox from './TextBox.vue';
-import PrimaryButton from './PrimaryButton.vue';
+import TextBox from "./TextBox.vue"
+import PrimaryButton from "./PrimaryButton.vue"
 export default {
-  name: 'LoginModal',
+  name: "LoginModal",
   emits: ["logIn", "signUp"],
   props: {
-    error: String
+    error: String,
   },
   data() {
     return {
-      mode: 'landing',
-      username: 'Username'
+      mode: "landing",
+      username: "Username",
     }
   },
   mounted() {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    if (urlParams.get('code') && urlParams.get('state')) {
-      console.log('reached url general check')
-      if (urlParams.get('state') == "login") {
-        console.log('reached state check!');
+    const queryString = window.location.search
+    const urlParams = new URLSearchParams(queryString)
+    if (urlParams.get("code") && urlParams.get("state")) {
+      console.log("reached url general check")
+      if (urlParams.get("state") == "login") {
+        console.log("reached state check!")
         fetch(`${this.serverURL}/api/soa2code`, {
           method: "POST",
           body: JSON.stringify({
-            "code": urlParams.get('code'),
-            "state": urlParams.get('state')
+            code: urlParams.get("code"),
+            state: urlParams.get("state"),
           }),
           headers: {
-            "Content-Type": "application/json; charset=utf-8"
+            "Content-Type": "application/json; charset=utf-8",
           },
-          credentials: 'include'
-        }).then((res) => {
-          this.mode = 'signup'
-          return res.json();
-        }).then((data) => {
-          console.log("Recieved session data:", data);
-          if (data.user_name) {
-            console.log(data);
-            this.user = {
-              "name": data.user_name,
-            }
-            console.log(data.user_name)
-            this.username = data.user_name
-            window.localStorage.setItem('user', JSON.stringify(this.user));
-          }
+          credentials: "include",
         })
+          .then((res) => {
+            this.mode = "signup"
+            return res.json()
+          })
+          .then((data) => {
+            console.log("Recieved session data:", data)
+            if (data.user_name) {
+              console.log(data)
+              this.user = {
+                name: data.user_name,
+              }
+              console.log(data.user_name)
+              this.username = data.user_name
+              window.localStorage.setItem("user", JSON.stringify(this.user))
+            }
+          })
       }
     }
   },
   components: {
     TextBox,
-    PrimaryButton
+    PrimaryButton,
   },
   methods: {
     existingAccount() {
-      this.mode = 'login'
+      this.mode = "login"
     },
     signUp() {
       this.$emit("signUp", {
         username: this.suUsr,
-        password: this.suPwd
+        password: this.suPwd,
       })
     },
     logIn() {
       this.$emit("logIn", {
         username: this.liUsr,
-        password: this.liPwd
-      });
-    }
+        password: this.liPwd,
+      })
+    },
   },
   computed: {
     clientURL() {
       // FOR DEVELOPMENT: override the window.clientHost variable in the main.js file
-      let root = window.clientHost;
-      return root;
+      let root = window.clientHost
+      return root
     },
     serverURL() {
       // FOR DEVELOPMENT: override the window.serverHost variable in the main.js file
-      let root = window.serverHost;
-      return root;
-    }
-  }
+      let root = window.serverHost
+      return root
+    },
+  },
 }
 </script>
 
@@ -183,13 +227,13 @@ img {
 }
 
 .soa-btn {
-  background: #2592FF;
+  background: #2592ff;
   font-family: Helvetica, Arial, sans-serif;
   position: relative;
 }
 
 .soa-btn span {
-  color: #F7A41C;
+  color: #f7a41c;
   text-shadow: 0 1px 5px rgba(0, 0, 0, 0.6);
 }
 
@@ -198,7 +242,7 @@ img {
 }
 
 .mc-btn::after {
-  content: 'ALPHA';
+  content: "ALPHA";
   font-size: 0.7em;
   background: var(--light-accent);
   position: absolute;
@@ -229,7 +273,7 @@ img {
   font-size: 0.8em;
   color: var(--text-primary);
   opacity: 0.2;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-weight: 200;
   padding: 1em 13% 0 13%;
 }

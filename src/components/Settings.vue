@@ -8,7 +8,9 @@
         @click.prevent="changeTheme"
         ><i data-eva="moon-outline" :data-eva-fill="textColor"></i
       ></a>
-      <p>Theme</p>
+      <p>
+        Theme: <span>{{ currentTheme }}</span>
+      </p>
     </div>
     <div class="opt">
       <a
@@ -18,7 +20,9 @@
         @click.prevent="changeNotifs"
         ><i data-eva="bell-outline" :data-eva-fill="textColor"></i
       ></a>
-      <p>Notifications {{ notifStatus }}</p>
+      <p>
+        Notifications: <span>{{ notifStatus }}</span>
+      </p>
     </div>
     <div class="opt">
       <a
@@ -28,7 +32,10 @@
         @click.prevent="changeFrame"
         ><i data-eva="menu-2-outline" :data-eva-fill="textColor"></i
       ></a>
-      <p>Message grouping {{ frameStatus == "true" ? "off" : "on" }}</p>
+      <p>
+        Message grouping:
+        <span>{{ frameStatus == "true" ? "off" : "on" }}</span>
+      </p>
     </div>
   </div>
 </template>
@@ -51,6 +58,7 @@ export default {
     return {
       textColor,
       notifStatus: window.localStorage.getItem("notifs"),
+      currentTheme: window.localStorage.getItem("theme"),
       frameStatus: window.localStorage.getItem("showFrame"),
     }
   },
@@ -96,6 +104,10 @@ export default {
 
 .opt:last-of-type {
   margin-bottom: 0;
+}
+
+.opt p > span {
+  opacity: 0.75;
 }
 
 svg.eva {

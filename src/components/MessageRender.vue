@@ -45,6 +45,7 @@
 <script>
 import MessageInput from "./MessageInput.vue"
 import Message from "./Message.vue"
+
 export default {
   name: "MessageRender",
   emits: ["sendMessage", "typing", "reportMessage"],

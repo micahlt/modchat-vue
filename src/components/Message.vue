@@ -3,7 +3,6 @@
     :class="{ message: true, descendant: !showFrame && frameShow == 'false' }"
     :data-id="msg.id"
   >
-    <base target="_blank" />
     <a
       :href="`https://scratch.mit.edu/users/${msg.username}`"
       class="username"
