@@ -13,7 +13,7 @@
     </div>
     <div class="grid-2">
       <div class="nav-options">
-        <a href="#" target="_self" title="Notifications" class="show-mobile"
+        <a href="#" target="_self" title="Notifications" class="show-mobile" @click.prevent="$emit('toggleUsers')"
           ><i data-eva="people-outline" :data-eva-fill="textColor"></i
         ></a>
         <a
@@ -47,7 +47,7 @@ import Settings from "./Settings.vue"
 import * as eva from "eva-icons"
 export default {
   name: "NavBar",
-  emits: ["roomSearch"],
+  emits: ["roomSearch", "toggleUsers"],
   components: {
     NavSearch,
     Settings,

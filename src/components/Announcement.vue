@@ -9,6 +9,7 @@
         <ul>
           <li><b>🧭 Safari support:</b> Safari and all Webkit browsers are now supported</li>
           <li><b>📃 Multi-line messages:</b> Use the shift and enter keys to create new lines</li>
+          <li><b>📱 Mobile users:</b> You can view online users on mobile with ease</li>
           <li><b>🎭 Roleplay room:</b> Visit the roleplay room if you're up for some RP</li>
           <li><b>⚙️ Settings improvements:</b> It's now clear which settings are in which states</li>
           <li><b>💬 Filter fixes:</b> You can now say the words "you'd" and "god" without being warned</li>

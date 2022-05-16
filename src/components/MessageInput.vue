@@ -45,6 +45,7 @@
       ref="input"
       id="input"
     ></div>
+    
     <div class="typing lightgray">{{ typingMessage }}</div>
     <div class="action-btns">
       <a title="Send" @click.prevent="manualSend($event)"

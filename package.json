@@ -1,6 +1,6 @@
 {
   "name": "modchat-vue",
-  "version": "2.1.2",
+  "version": "2.1.4",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -27,6 +27,7 @@
     "vue-instant": "^1.0.4",
     "vue-safe-html": "^1.2.0",
     "vue-search-panel": "^1.0.6",
+    "vue3-emoji-picker": "^1.1.2",
     "vue3-markdown-it": "^1.0.10",
     "workbox": "0.0.0",
     "workbox-core": "^6.5.3",

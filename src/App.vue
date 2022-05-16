@@ -11,6 +11,7 @@
     class="navbar"
     @roomSearch="roomChange"
     v-if="!isBanned"
+    @toggleUsers="usersOpen = !usersOpen"
   />
   <MessageRender
     @sendMessage="sendMessage"
@@ -22,7 +23,13 @@
     v-if="!isBanned"
     :room="currentRoom"
   />
-  <UsersOnline class="users" v-if="!isBanned" :room="currentRoom" />
+  <transition name="fade">
+    <UsersOnline
+      class="users"
+      v-if="!isBanned && usersOpen"
+      :room="currentRoom"
+    />
+  </transition>
   <transition-group name="fade">
     <LoginModal
       class="modal"
@@ -51,7 +58,7 @@
 // These global variables are used to provide API and redirect routes.  You can change these by changing your environment variables.  There's a good tutorial here: https://www.twilio.com/blog/2017/01/how-to-set-environment-variables.html
 window.serverHost = process.env.VUE_APP_SERVER
 window.clientHost = process.env.VUE_APP_CLIENT
-const VERSION = "2.1.2"
+const VERSION = "2.1.4"
 import { io } from "socket.io-client"
 import MessageRender from "./components/MessageRender.vue"
 import NavBar from "./components/NavBar.vue"
@@ -254,10 +261,14 @@ export default {
       disconnectTimes: 0,
       version: VERSION,
       localVersion,
+      usersOpen: true,
     }
   },
   mounted() {
     let that = this
+    if (window.innerWidth < 700) {
+      this.usersOpen = false
+    }
     const storage = JSON.parse(window.localStorage.getItem("user"))
     if (storage.secondName == "Banned User") {
       fetch(
@@ -523,6 +534,7 @@ export default {
 <style>
 body {
   overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
 
 #app {

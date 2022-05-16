@@ -163,7 +163,6 @@ svg {
   height: 25px;
   width: calc(240px - 3em);
   transition: 0.2s fill;
-  
 }
 
 a:hover svg {
@@ -173,8 +172,18 @@ a:hover svg {
 
 @media only screen and (max-width: 700px) {
   .sidebar {
-    opacity: 0;
-    display: none;
+    grid-column: 1 / 3;
+    grid-row: 2 / 3;
+    width: 100%;
+    height: calc(100vh - 70px);
+  }
+
+  .sidebar-top {
+    width: 100%;
+  }
+  
+  .sidebar-bottom {
+    width: calc(100% - 3em);
   }
 }
 </style>
