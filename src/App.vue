@@ -51,7 +51,7 @@
 // These global variables are used to provide API and redirect routes.  You can change these by changing your environment variables.  There's a good tutorial here: https://www.twilio.com/blog/2017/01/how-to-set-environment-variables.html
 window.serverHost = process.env.VUE_APP_SERVER
 window.clientHost = process.env.VUE_APP_CLIENT
-const VERSION = "2.1.0"
+const VERSION = "2.1.2"
 import { io } from "socket.io-client"
 import MessageRender from "./components/MessageRender.vue"
 import NavBar from "./components/NavBar.vue"

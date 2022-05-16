@@ -7,7 +7,7 @@
         Welcome to Modchat version {{ version }}! We've got some great new
         features for you, including:<br/>
         <ul>
-          <li><b>🧭 Safari support:</b> Safari and all Webkit browsers are now supported except iPhone</li>
+          <li><b>🧭 Safari support:</b> Safari and all Webkit browsers are now supported</li>
           <li><b>📃 Multi-line messages:</b> Use the shift and enter keys to create new lines</li>
           <li><b>🎭 Roleplay room:</b> Visit the roleplay room if you're up for some RP</li>
           <li><b>⚙️ Settings improvements:</b> It's now clear which settings are in which states</li>

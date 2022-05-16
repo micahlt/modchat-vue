@@ -143,7 +143,7 @@ export default {
         return
       }
       this.$emit("sendMessage", {
-        content: this.$refs.input.innerText,
+        content: this.$refs.input.innerText.replaceAll("\n", "\n\n\n"),
         type: "text",
         reply_id: this.replyId,
       })
