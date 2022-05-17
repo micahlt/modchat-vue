@@ -9,6 +9,7 @@
         <ul>
           <li><b>😊 Emoji picker:</b> Easily choose emojis for your messages</li>
           <li><b>🛡️ Better emoji filter:</b> We've added filters to emojis</li>
+          <li><b>👤 Multiroom userpanel:</b> The Online Users panel now displays those only in the same room as you</li>
         </ul>
         Do you have a feature request?  Email <a href="mailto:hi@micahlindley.com" target="_blank">hi@micahlindley.com</a>!
       </p>

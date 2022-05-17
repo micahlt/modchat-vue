@@ -28,7 +28,7 @@
       <a
         href="#"
         target="_self"
-        title="Toggle frame"
+        title="Toggle message grouping"
         @click.prevent="changeFrame"
         ><i data-eva="menu-2-outline" :data-eva-fill="textColor"></i
       ></a>
@@ -37,13 +37,23 @@
         <span>{{ frameStatus == "true" ? "off" : "on" }}</span>
       </p>
     </div>
+    <div class="opt">
+      <a
+        href="#"
+        target="_self"
+        title="View changelog"
+        @click.prevent="viewChanges"
+        ><i data-eva="clock-outline" :data-eva-fill="textColor"></i
+      ></a>
+      <p>Show changelog</p>
+    </div>
   </div>
 </template>
 
 <script>
 import * as eva from "eva-icons"
 export default {
-  emits: ["changeTheme", "changeNotifs", "changeFrame", "close"],
+  emits: ["changeTheme", "changeNotifs", "changeFrame", "viewChanges", "close"],
   mounted() {
     eva.replace()
   },
@@ -75,6 +85,10 @@ export default {
       this.$emit("changeFrame")
       this.$emit("close")
     },
+    viewChanges() {
+      this.$emit("viewChanges")
+      this.$emit("close")
+    }
   },
 }
 </script>

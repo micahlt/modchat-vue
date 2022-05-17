@@ -32,6 +32,7 @@
             @changeTheme="changeTheme"
             @changeNotifs="changeNotifs"
             @changeFrame="changeFrame"
+            @viewChanges="$emit('openChangelog')"
             @close="settingsOpened = !settingsOpened"
           />
         </transition>
@@ -47,7 +48,7 @@ import Settings from "./Settings.vue"
 import * as eva from "eva-icons"
 export default {
   name: "NavBar",
-  emits: ["roomSearch", "toggleUsers"],
+  emits: ["roomSearch", "toggleUsers", "openChangelog"],
   components: {
     NavSearch,
     Settings,
