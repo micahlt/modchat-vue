@@ -1,6 +1,7 @@
 import { createApp } from "vue"
 import VueSafeHTML from "vue-safe-html"
 import Markdown from "vue3-markdown-it"
+import vClickOutside from "click-outside-vue3"
 import "balloon-css"
 import App from "./App.vue"
 import runtime from "serviceworker-webpack-plugin/lib/runtime"
@@ -51,8 +52,10 @@ if (!String.prototype.replaceAll) {
 
 let app = createApp(App)
 app.use(Markdown)
+app.use(vClickOutside)
 app.use(VueSafeHTML, {
   allowedTags: ["a"],
 })
 app.mount("#app")
 import "./theme/variables.css"
+import "./theme/index.css"

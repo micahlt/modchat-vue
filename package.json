@@ -12,6 +12,7 @@
   "dependencies": {
     "balloon-css": "^1.2.0",
     "caniuse-lite": "^1.0.30001341",
+    "click-outside-vue3": "^4.0.1",
     "core-js": "^3.22.5",
     "css-loader": "^4.3.0",
     "eva-icons": "^1.1.3",

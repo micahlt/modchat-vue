@@ -45,9 +45,21 @@
       ref="input"
       id="input"
     ></div>
-    
+
     <div class="typing lightgray">{{ typingMessage }}</div>
+    <transition name="fade">
+      <EmojiPicker
+        @select="onSelectEmoji"
+        :native="true"
+        :hide-group-icons="true"
+        v-if="pickerOpen"
+        v-click-outside="outsidePicker"
+      />
+    </transition>
     <div class="action-btns">
+      <a title="Insert emoji" @click.prevent="pickerOpen = !pickerOpen"
+        ><i data-eva="smiling-face-outline" :data-eva-fill="accent"></i
+      ></a>
       <a title="Send" @click.prevent="manualSend($event)"
         ><i data-eva="paper-plane-outline" :data-eva-fill="accent"></i
       ></a>
@@ -59,9 +71,14 @@
 import * as eva from "eva-icons"
 window.serverHost = process.env.VUE_APP_SERVER
 window.clientHost = process.env.VUE_APP_CLIENT
+import EmojiPicker from "vue3-emoji-picker"
+import "../../node_modules/vue3-emoji-picker/dist/style.css"
+
 export default {
   name: "MessageInput",
-  components: {},
+  components: {
+    EmojiPicker: EmojiPicker,
+  },
   props: {
     typingList: Array,
     replyId: {
@@ -103,6 +120,7 @@ export default {
       accent,
       typingMessage: "",
       replyData: null,
+      pickerOpen: false,
     }
   },
   methods: {
@@ -150,6 +168,36 @@ export default {
       })
       e.target.innerText = ""
       this.removeReply()
+    },
+    onSelectEmoji(e) {
+      this.$refs.input.focus()
+      this.$refs.input.innerText += e.i
+      this.pickerOpen = false
+      this.moveToEnd(this.$refs.input)
+    },
+    outsidePicker() {
+      if (this.pickerOpen) {
+        this.pickerOpen = false
+      }
+    },
+    moveToEnd(el) {
+      el.focus()
+      if (
+        typeof window.getSelection != "undefined" &&
+        typeof document.createRange != "undefined"
+      ) {
+        var range = document.createRange()
+        range.selectNodeContents(el)
+        range.collapse(false)
+        var sel = window.getSelection()
+        sel.removeAllRanges()
+        sel.addRange(range)
+      } else if (typeof document.body.createTextRange != "undefined") {
+        var textRange = document.body.createTextRange()
+        textRange.moveToElementText(el)
+        textRange.collapse(false)
+        textRange.select()
+      }
     },
     manualSend() {
       let inputBox = this.$refs.input
@@ -312,6 +360,7 @@ a {
 
 .action-btns a {
   padding-left: 0.4em;
+  cursor: pointer;
 }
 
 .action-btns svg {
@@ -407,5 +456,25 @@ a {
 
 .remove-reply:hover {
   color: var(--text-primary);
+}
+
+/* Other emojipicker styles can be found in ../theme/index.css */
+.v3-emoji-picker {
+  position: absolute;
+  bottom: 92px;
+  right: 25px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(5%);
 }
 </style>

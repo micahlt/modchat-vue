@@ -6,3 +6,55 @@
 a, Markdown {
   color: var(--text-primary);
 }
+
+/* EMOJI PICKER */
+.dark .v3-emoji-picker .v3-header .v3-groups {
+  filter: invert(1);
+}
+
+.light .v3-emoji-picker {
+  background: var(--bg-primary);
+}
+
+.v3-emoji-picker .v3-search input {
+  background: var(--bg-secondary);
+  border-color: var(--outline);
+  color: var(--text-primary);
+}
+
+.v3-emoji-picker .v3-search input:focus {
+  border-color: var(--accent);
+}
+
+.v3-emoji-picker .v3-header {
+  border-bottom-color: var(--outline);
+}
+
+.v3-emoji-picker .v3-body .v3-body-inner .v3-group h5.v3-sticky {
+  background: var(--bg-secondary);
+}
+
+.light .v3-emoji-picker .v3-body .v3-body-inner .v3-group h5.v3-sticky {
+  background: var(--bg-primary);
+}
+
+.v3-emoji-picker .v3-body .v3-body-inner .v3-group .v3-emojis button:hover {
+  background: var(--bg-tertiary);
+}
+
+.v3-skin-tones {
+  background: var(--bg-secondary);
+}
+
+.v3-emoji-picker .v3-text {
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+}
+
+.v3-emoji-picker button {
+  color: var(--text-primary);
+}
+
+.v3-search input::placeholder {
+  font-family: 'Inter', sans-serif;
+}
