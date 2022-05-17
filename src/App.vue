@@ -1,7 +1,6 @@
 <template :class="theme">
   <Announcement
-    v-if="true"
-    data="localVersion != version"
+    v-if="localVersion != version"
     :version="version"
     @close="localVersion = version"
   />
