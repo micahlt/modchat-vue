@@ -96,6 +96,10 @@ export default {
         .then((data) => {
           const set = new Set(data.online.map((item) => JSON.stringify(item)))
           this.userList = [...set].map((item) => JSON.parse(item))
+          this.userList = this.userList.filter((item) => {
+            if (item.room == this.room) return true;
+            return false;
+          })
         })
     },
   },

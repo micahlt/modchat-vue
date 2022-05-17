@@ -168,6 +168,7 @@ export default {
       })
       e.target.innerText = ""
       this.removeReply()
+      this.$refs.input.focus()
     },
     onSelectEmoji(e) {
       this.$refs.input.focus()
@@ -208,6 +209,7 @@ export default {
       })
       inputBox.innerText = ""
       this.removeReply()
+      this.$refs.input.focus()
     },
     constructTypingMessage() {
       if (this.typingList.length > 0 && this.typingList.length < 2) {
