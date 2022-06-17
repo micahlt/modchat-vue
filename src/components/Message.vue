@@ -140,7 +140,7 @@ export default {
       textSecondary,
       fontSize,
       devs: ["-Archon-", "b1048546", "AmazingMech2418"],
-      mods: ["-Archon-", "b1048546", "da-ta", "Biker2000"],
+      mods: ["-Archon-", "b1048546", "da-ta", "Biker2000", "peytonvilot"],
       replyData: null,
       frameShow: window.localStorage.getItem("showFrame"),
     }
