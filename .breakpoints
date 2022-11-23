@@ -4,22 +4,22 @@
       {
         "id": "34e72480-115a-4182-819a-64c9024476df",
         "line": 1,
-        "version": 3800,
+        "version": 3810,
         "index": 0
       }
     ],
     "src/components/MessageInput.vue": [
       {
         "id": "af71b6fd-bfb5-4227-a38b-e0c03842d238",
-        "line": 36,
-        "version": 2702,
-        "index": 853
+        "line": 4,
+        "version": 2805,
+        "index": 51
       },
       {
         "id": "5a110cc7-cb75-4e6f-959c-c18b3683e5b5",
-        "line": 149,
-        "version": 2702,
-        "index": 3390
+        "line": 4,
+        "version": 2805,
+        "index": 51
       }
     ]
   }

@@ -72,38 +72,35 @@ export default {
   name: "UsersOnline",
   props: {
     room: String,
+    usersList: Array
   },
   components: {
     UserStatus,
   },
   data() {
     return {
-      userList: [],
+      userList: []
     }
   },
   mounted() {
     this.update()
-    window.setInterval(this.update, 4000)
+    window.setInterval(this.update, 100)
   },
   methods: {
     update() {
-      fetch(`${window.serverHost}/api/onlineusers`, {
-        credentials: "include",
-      })
-        .then((res) => {
-          return res.json()
-        })
-        .then((data) => {
-          const set = new Set(data.online.map((item) => JSON.stringify(item)))
+        const data = this.usersList
+        this.userList = []
+          if(data[0]) {
+          const set = new Set(data.map((item) => JSON.stringify(item)))
           this.userList = [...set].map((item) => JSON.parse(item))
           this.userList = this.userList.filter((item) => {
             if (item.room == this.room) return true;
             return false;
           })
-        })
+        }
+    }
     },
-  },
-}
+  }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

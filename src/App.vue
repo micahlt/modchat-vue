@@ -26,6 +26,7 @@
   />
   <transition name="fade">
     <UsersOnline
+      :usersList="usersList"
       class="users"
       v-if="!isBanned && usersOpen"
       :room="currentRoom"
@@ -263,6 +264,7 @@ export default {
       version: VERSION,
       localVersion,
       usersOpen: true,
+      usersList: []
     }
   },
   mounted() {
@@ -386,6 +388,12 @@ export default {
               access_token: that.access_token,
               sameTab: false,
             })
+          })
+          socket.on("users", (users) => {
+            that.usersList = users
+          })
+          socket.on("user connected", (user) => {
+            that.usersList.push(user);
           })
           socket.on("bannedUser", function (data) {
             const user = JSON.parse(window.localStorage.getItem("user"))
